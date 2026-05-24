@@ -1,0 +1,57 @@
+{% extends 'portal/base.html' %}
+{% load portal_extras %}
+
+{% block title %}{{ maker.name }} - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <button class="back-btn" onclick="location.href='{% url 'story' %}'">
+        <i class="fas fa-arrow-right"></i> عودة
+    </button>
+    
+    {% if maker.video %}
+        <div class="detail-video">
+            <iframe src="{{ maker.video|embed_video }}" allowfullscreen></iframe>
+        </div>
+    {% endif %}
+    
+    <h1 class="detail-title">{{ maker.name }}</h1>
+    <div class="detail-meta">
+        <span><i class="fas fa-briefcase"></i> {{ maker.title }}</span>
+    </div>
+    
+    <div class="detail-content">
+        <h3>السيرة الذاتية</h3>
+        <p>{{ maker.full_story|default:maker.description|default:'السيرة الذاتية قيد التحديث'|linebreaks }}</p>
+        
+        <h3 style="margin-top: 2rem;">الإنجازات</h3>
+        <ul>
+            {% for ach in maker.achievements %}
+                <li>{{ ach }}</li>
+            {% empty %}
+                <li>لا توجد إنجازات مسجلة بعد.</li>
+            {% endfor %}
+        </ul>
+        
+        <h3 style="margin-top: 2rem;">أخبار</h3>
+        <ul>
+            {% for news_item in maker.news %}
+                <li>{{ news_item }}</li>
+            {% empty %}
+                <li>لا توجد أخبار مسجلة بعد.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    {% if user.is_authenticated %}
+        {% if user.profile.user_type == 'investor' %}
+            <button class="support-btn" onclick="expressInterest('maker', '{{ maker.pk }}')" style="background-color: var(--primary); margin-bottom: 10px;">
+                <i class="fas fa-hand-holding-usd"></i> إبداء الاهتمام بدعم النموذج
+            </button>
+        {% endif %}
+        <button class="support-btn" onclick="initiateChat('maker', '{{ maker.pk }}')">
+            <i class="fas fa-comments"></i> تواصل مع {{ maker.name }}
+        </button>
+    {% endif %}
+</div>
+{% endblock %}

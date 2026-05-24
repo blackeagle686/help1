@@ -1,0 +1,202 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+{% load portal_extras %}
+
+{% block title %}بصمة قنا - الرئيسية{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>بصمة قنا</h1>
+        <p>المنصة الرقمية الأولى لدعم ورعاية المبتكرين والمبدعين وصناع الأثر بمحافظة قنا</p>
+        <div class="hero-buttons">
+            <a href="{% url 'projects' %}" class="hero-btn hero-btn-primary" style="text-decoration: none;">تصفح المشاريع</a>
+            <a href="{% url 'nominate' %}" class="hero-btn hero-btn-secondary" style="text-decoration: none;">رشح نموذج</a>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+    <div class="stat-card">
+        <span class="stat-number">{{ stats.makers }}</span>
+        <span class="stat-label">صانع أثر</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ stats.projects }}</span>
+        <span class="stat-label">مشروع موثق</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ stats.initiatives }}</span>
+        <span class="stat-label">مبادرة</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ stats.users }}</span>
+        <span class="stat-label">عضو</span>
+    </div>
+</section>
+
+<!-- QUOTES SLIDER SECTION -->
+<div class="quotes-section">
+    <div class="quotes-text">
+        <h2>اقتباسات ملهمة</h2>
+        <p>كلمات من المبدعين وصناع الأثر في محافظة قنا</p>
+    </div>
+    
+    <div class="quotes-slider">
+        <div class="quotes-cards" id="quotesCards">
+            <div class="quote-card active">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="أحمد علي">
+                <div>
+                    <strong>أحمد علي</strong>
+                    <p>"الإبداع يبدأ بفكرة صغيرة، والعزيمة تصنع المستحيل"</p>
+                    <small>مبتكر</small>
+                </div>
+            </div>
+            <div class="quote-card">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="سارة حسن">
+                <div>
+                    <strong>سارة حسن</strong>
+                    <p>"الموهبة تحتاج فقط فرصة، والعمل الجاد يصنع النجاح"</p>
+                    <small>باحثة</small>
+                </div>
+            </div>
+            <div class="quote-card">
+                <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="محمد عادل">
+                <div>
+                    <strong>محمد عادل</strong>
+                    <p>"كل إنجاز عظيم بدأ بمحاولة، والاستمرار هو سر التميز"</p>
+                    <small>رائد أعمال</small>
+                </div>
+            </div>
+            <div class="quote-card">
+                <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="منى سامي">
+                <div>
+                    <strong>منى سامي</strong>
+                    <p>"المعرفة تصنع الفرق، والإصرار يحقق الأحلام"</p>
+                    <small>مخترعة</small>
+                </div>
+            </div>
+            <div class="quote-card">
+                <img src="https://randomuser.me/api/portraits/men/41.jpg" alt="خالد عبدالله">
+                <div>
+                    <strong>خالد عبدالله</strong>
+                    <p>"التحديات تخلق الفرص، والأفكار المبتكرة تغير العالم"</p>
+                    <small>مهندس</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- صناع الأثر -->
+    <section>
+        <div class="section-title">
+            <h2>صناع الأثر</h2>
+        </div>
+        
+        <div class="cards-grid">
+            {% for maker in stories %}
+                <div class="card" onclick="location.href='{% url 'story_detail' maker.pk %}'">
+                    <div class="card-img" style="background-image: url('{{ maker.image|default:'https://via.placeholder.com/400x300/3b82f6/ffffff?text=Story+Maker' }}')">
+                        <div class="play-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">{{ maker.name }}</h3>
+                        <div class="card-subtitle">{{ maker.title }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="grid-column: 1/-1; text-align: center; color: #64748B;">لا يوجد صناع أثر حالياً.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- المشاريع -->
+    <section style="margin-top: 4rem;">
+        <div class="section-title">
+            <h2>أحدث المشاريع الموثقة</h2>
+        </div>
+        
+        <div class="cards-grid">
+            {% for project in projects %}
+                <div class="card" onclick="location.href='{% url 'project_detail' project.pk %}'">
+                    <div class="card-img" style="background-image: url('{{ project|card_image }}')">
+                        <div class="play-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">{{ project.title }}</h3>
+                        <div class="card-subtitle">{{ project.innovator_name }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="grid-column: 1/-1; text-align: center; color: #64748B;">لا توجد مشاريع موثقة حالياً.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- المبادرات -->
+    <section style="margin-top: 4rem;">
+        <div class="section-title">
+            <h2>المبادرات</h2>
+        </div>
+        
+        <div class="cards-grid">
+            {% for initiative in initiatives %}
+                <div class="card" onclick="location.href='{% url 'initiative_detail' initiative.pk %}'">
+                    <div class="card-img" style="background-image: url('{{ initiative|card_image }}')">
+                        <div class="play-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">{{ initiative.title }}</h3>
+                        <div class="card-subtitle">{{ initiative.founder }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="grid-column: 1/-1; text-align: center; color: #64748B;">لا توجد مبادرات حالياً.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        startQuotesSlider();
+    });
+
+    function startQuotesSlider() {
+        let index = 0;
+        const cards = document.querySelectorAll(".quote-card");
+        const container = document.getElementById("quotesCards");
+        
+        if (!cards.length || !container) return;
+        
+        const height = 124; // Quote card height including margins on desktop
+        
+        setInterval(() => {
+            cards[index].classList.remove("active");
+            
+            index++;
+            
+            if (index >= cards.length) {
+                index = 0;
+                container.style.transform = "translateY(0)";
+            } else {
+                container.style.transform = `translateY(-${height * index}px)`;
+            }
+            
+            cards[index].classList.add("active");
+        }, 3000);
+    }
+</script>
+{% endblock %}

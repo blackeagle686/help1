@@ -1,0 +1,50 @@
+{% extends 'portal/base.html' %}
+{% load portal_extras %}
+
+{% block title %}{{ initiative.title }} - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <button class="back-btn" onclick="location.href='{% url 'projects' %}?type=initiative'">
+        <i class="fas fa-arrow-right"></i> عودة
+    </button>
+    
+    {% if initiative.video %}
+        <div class="detail-video">
+            <iframe src="{{ initiative.video|embed_video }}" allowfullscreen></iframe>
+        </div>
+    {% endif %}
+    
+    <h1 class="detail-title">{{ initiative.title }}</h1>
+    <div class="detail-meta">
+        <span><i class="fas fa-user"></i> مؤسس المبادرة: {{ initiative.founder }}</span>
+        <span><i class="fas fa-calendar"></i> {{ initiative.date|date:"Y-m-d" }}</span>
+    </div>
+    
+    <div class="detail-content">
+        <h3>عن المبادرة</h3>
+        <p>{{ initiative.description|linebreaks }}</p>
+        
+        <h3 style="margin-top: 2rem;">إنجازات المبادرة</h3>
+        <ul>
+            {% for ach in initiative.achievements %}
+                <li>{{ ach }}</li>
+            {% empty %}
+                <li>قيد التحديث.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    {% if user.is_authenticated %}
+        {% if user.profile.user_type == 'investor' %}
+            <button class="support-btn" style="background: var(--primary); margin-bottom: 10px;" onclick="expressInterest('initiative', '{{ initiative.pk }}')">
+                <i class="fas fa-hand-holding-heart"></i> أنا مهتم بدعم هذه المبادرة
+            </button>
+        {% endif %}
+        
+        <button class="support-btn" onclick="initiateChat('initiative', '{{ initiative.pk }}', '')">
+            <i class="fas fa-comments"></i> تواصل مع القائمين على المبادرة
+        </button>
+    {% endif %}
+</div>
+{% endblock %}

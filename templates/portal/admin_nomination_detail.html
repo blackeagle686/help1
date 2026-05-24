@@ -1,0 +1,53 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}تفاصيل الترشيح - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 700px;">
+    <button class="back-btn" onclick="location.href='{% url 'dashboard' %}'">
+        <i class="fas fa-arrow-right"></i> عودة للوحة التحكم
+    </button>
+    
+    <div class="dashboard-card">
+        <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">تفاصيل الترشيح</h2>
+        
+        <div style="display: grid; gap: 1rem;">
+            <div>
+                <strong>الاسم:</strong>
+                <p>{{ nom.name }}</p>
+            </div>
+            <div>
+                <strong>النوع:</strong>
+                <p>{{ nom.get_type_display }}</p>
+            </div>
+            <div>
+                <strong>العنوان:</strong>
+                <p>{{ nom.title|default:'غير محدد' }}</p>
+            </div>
+            <div>
+                <strong>الوصف:</strong>
+                <p>{{ nom.description|linebreaks }}</p>
+            </div>
+            <div>
+                <strong>الحالة:</strong>
+                <p>
+                    {% if nom.status == 'approved' %}<span class="badge-verified">مقبول</span>
+                    {% elif nom.status == 'added' %}<span class="badge-verified">تمت الإضافة</span>
+                    {% else %}<span class="badge-pending">قيد المراجعة</span>{% endif %}
+                </p>
+            </div>
+            <div>
+                <strong>التاريخ:</strong>
+                <p>{{ nom.date|date:"Y-m-d H:i" }}</p>
+            </div>
+        </div>
+        
+        {% if nom.status == 'pending' %}
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <a href="{% url 'admin_approve_nomination' nom.pk %}" class="hero-btn hero-btn-primary" style="text-decoration: none;">قبول الترشيح</a>
+                <a href="{% url 'admin_reject_nomination' nom.pk %}" class="hero-btn" style="background: #EF4444; color: white; text-decoration: none;" onclick="return confirm('هل أنت متأكد؟')">رفض الترشيح</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

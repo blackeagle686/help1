@@ -1,0 +1,230 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}لوحة المبتكر - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 2.5rem; color: var(--primary-dark);">لوحة المبتكر</h2>
+            <p style="color: #64748B;">مرحباً {{ request.user.first_name|default:request.user.username }}</p>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="hero-btn hero-btn-primary" onclick="showChatModal()" style="background: var(--primary);">
+                <i class="fas fa-comments"></i> المحادثات
+            </button>
+            <button class="hero-btn hero-btn-primary" onclick="showModal('add-innovator-project-modal')">
+                <i class="fas fa-plus"></i> إضافة مشروع/مبادرة
+            </button>
+        </div>
+    </div>
+    
+    <!-- Notifications Section -->
+    {% if notifications %}
+        <div class="dashboard-card">
+            <h3><i class="fas fa-bell" style="color: var(--accent);"></i> 📬 إشعارات الاهتمام</h3>
+            {% for n in notifications %}
+                <div class="interest-item">
+                    <p>{{ n }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <!-- User's Projects -->
+    <div class="dashboard-card">
+        <h3><i class="fas fa-project-diagram" style="color: var(--accent);"></i> مشاريعي</h3>
+        {% for p in projects %}
+            <div class="innovator-project-item">
+                <div>
+                    <h4>{{ p.title }}</h4>
+                    <small>الحالة: {% if p.status == 'verified' %}✅ موثق{% else %}⏳ قيد المراجعة{% endif %}</small>
+                    {% if p.team %}<small style="display: block;">👥 فريق: {{ p.team|length }} أعضاء</small>{% endif %}
+                </div>
+                <div>
+                    <a href="{% url 'project_detail' p.pk %}" class="action-btn btn-edit"><i class="fas fa-eye"></i> عرض</a>
+                    <button class="action-btn btn-approve" onclick="initiateChat('project', '{{ p.pk }}', '')">
+                        <i class="fas fa-comment"></i> دردشة
+                    </button>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: #64748B; padding: 1rem;">لا توجد مشاريع مضافة بعد. يمكنك إضافة مشروع جديد من الزر أعلاه.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Innovator Project Modal -->
+<div class="modal" id="add-innovator-project-modal">
+    <div class="modal-content" style="max-width: 700px;">
+        <span class="close-modal" onclick="closeModal('add-innovator-project-modal')">&times;</span>
+        <div style="max-height: 70vh; overflow-y: auto; padding: 1rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">
+                <i class="fas fa-plus-circle"></i> إضافة مشروع/مبادرة جديدة
+            </h3>
+            
+            <form id="innovator-project-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">عنوان المشروع *</label>
+                    <input type="text" id="inp-title" placeholder="مثال: نظام الري الذكي" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">وصف المشروع *</label>
+                    <textarea id="inp-description" rows="5" placeholder="اشرح فكرة مشروعك بالتفصيل..." style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">نوع المشروع *</label>
+                    <select id="inp-type" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                        <option value="">اختر النوع</option>
+                        <option value="project">مشروع</option>
+                        <option value="initiative">مبادرة</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">حالة الملكية الفكرية *</label>
+                    <select id="inp-ip" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                        <option value="">اختر الحالة</option>
+                        <option value="registered">مسجلة</option>
+                        <option value="pending">قيد التسجيل</option>
+                        <option value="idea">فكرة فقط</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">رابط الفيديو (YouTube)</label>
+                    <input type="url" id="inp-video" placeholder="https://www.youtube.com/embed/..." style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                </div>
+                
+                <!-- Team Members -->
+                <div style="margin: 2rem 0; padding: 1.5rem; background: #F8FAFC; border-radius: 15px; border: 2px solid var(--primary);">
+                    <h4 style="margin-bottom: 1rem; color: var(--primary-dark);"><i class="fas fa-users" style="color: var(--accent);"></i> أعضاء الفريق *</h4>
+                    <div id="team-container">
+                        <div class="team-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="text" class="team-input" placeholder="اسم العضو" value="{{ request.user.first_name }}" style="flex: 1; padding:0.8rem; border:2px solid #E2E8F0; border-radius:10px;">
+                            <button type="button" onclick="this.parentElement.remove()" style="background: #EF4444; color:white; border:none; border-radius:10px; padding:0 1rem; cursor:pointer;"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addTeamRow()" style="background: var(--primary); color:white; border:none; border-radius:10px; padding:0.7rem 1.5rem; margin-top:1rem; cursor:pointer;"><i class="fas fa-plus"></i> إضافة عضو جديد</button>
+                </div>
+                
+                <!-- Gallery Images -->
+                <div style="margin: 2rem 0; padding: 1.5rem; background: #F8FAFC; border-radius: 15px; border: 2px solid var(--accent);">
+                    <h4 style="margin-bottom: 1rem; color: var(--primary-dark);"><i class="fas fa-images" style="color: var(--accent);"></i> معرض الصور *</h4>
+                    <div id="gallery-container">
+                        <div class="gallery-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="url" class="gallery-input" placeholder="https://example.com/image.jpg" style="flex: 1; padding:0.8rem; border:2px solid #E2E8F0; border-radius:10px;">
+                            <button type="button" onclick="this.parentElement.remove()" style="background: #EF4444; color:white; border:none; border-radius:10px; padding:0 1rem; cursor:pointer;"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addGalleryRow()" style="background: var(--accent); color:white; border:none; border-radius:10px; padding:0.7rem 1.5rem; margin-top:1rem; cursor:pointer;"><i class="fas fa-plus"></i> إضافة صورة</button>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">صورة الغلاف (اختياري)</label>
+                    <input type="url" id="inp-cover" placeholder="https://example.com/cover.jpg" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                </div>
+                
+                <button type="button" onclick="submitInnovatorProject()" class="hero-btn hero-btn-primary" style="width:100%; margin-top:2rem; padding:1.2rem; font-size:1.2rem; cursor:pointer;">
+                    <i class="fas fa-save"></i> حفظ وإرسال للمراجعة
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function addTeamRow() {
+        const container = document.getElementById('team-container');
+        const row = document.createElement('div');
+        row.className = 'team-row';
+        row.style.cssText = 'display: flex; gap: 0.5rem; margin-bottom: 0.5rem;';
+        row.innerHTML = `
+            <input type="text" class="team-input" placeholder="اسم العضو" style="flex: 1; padding:0.8rem; border:2px solid #E2E8F0; border-radius:10px;">
+            <button type="button" onclick="this.parentElement.remove()" style="background: #EF4444; color:white; border:none; border-radius:10px; padding:0 1rem; cursor:pointer;"><i class="fas fa-times"></i></button>
+        `;
+        container.appendChild(row);
+    }
+    
+    function addGalleryRow() {
+        const container = document.getElementById('gallery-container');
+        const row = document.createElement('div');
+        row.className = 'gallery-row';
+        row.style.cssText = 'display: flex; gap: 0.5rem; margin-bottom: 0.5rem;';
+        row.innerHTML = `
+            <input type="url" class="gallery-input" placeholder="https://example.com/image.jpg" style="flex: 1; padding:0.8rem; border:2px solid #E2E8F0; border-radius:10px;">
+            <button type="button" onclick="this.parentElement.remove()" style="background: #EF4444; color:white; border:none; border-radius:10px; padding:0 1rem; cursor:pointer;"><i class="fas fa-times"></i></button>
+        `;
+        container.appendChild(row);
+    }
+    
+    function submitInnovatorProject() {
+        const title = document.getElementById('inp-title').value;
+        const description = document.getElementById('inp-description').value;
+        const type = document.getElementById('inp-type').value;
+        const ip = document.getElementById('inp-ip').value;
+        const video = document.getElementById('inp-video').value;
+        const cover = document.getElementById('inp-cover').value;
+        
+        const teamInputs = document.querySelectorAll('.team-input');
+        const galleryInputs = document.querySelectorAll('.gallery-input');
+        
+        if (!title || !description || !type || !ip) {
+            showToast('الرجاء ملء جميع الحقول المطلوبة', 'error');
+            return;
+        }
+        
+        const teamMembers = [];
+        teamInputs.forEach(i => { if (i.value.trim()) teamMembers.push(i.value.trim()); });
+        
+        const galleryImages = [];
+        galleryInputs.forEach(i => { if (i.value.trim()) galleryImages.push(i.value.trim()); });
+        
+        if (teamMembers.length === 0) {
+            showToast('الرجاء إضافة عضو فريق واحد على الأقل', 'error');
+            return;
+        }
+        
+        if (galleryImages.length === 0) {
+            showToast('الرجاء إضافة صورة واحدة على الأقل للمعرض', 'error');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('type', type);
+        formData.append('ip_status', ip);
+        formData.append('video', video);
+        formData.append('cover', cover);
+        teamMembers.forEach(m => formData.append('team[]', m));
+        galleryImages.forEach(g => formData.append('gallery[]', g));
+        
+        fetch("{% url 'innovator_add_project' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showToast(data.message, 'success');
+                closeModal('add-innovator-project-modal');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showToast(data.message, 'error');
+            }
+        })
+        .catch(() => {
+            showToast('حدث خطأ أثناء إرسال المشروع', 'error');
+        });
+    }
+</script>
+{% endblock %}

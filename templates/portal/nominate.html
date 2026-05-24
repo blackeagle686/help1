@@ -1,0 +1,40 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}رشح نموذج - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section-title">
+        <h2>رشح نموذج</h2>
+        <p style="color: #64748B; margin-top: 1rem;">يمكنك اقتراح أو ترشيح مبدع، مبتكر، أو مبادرة لتوثيقها وعرضها على المنصة</p>
+    </div>
+
+    <div style="background: white; padding: 2rem; border-radius: 20px; max-width: 600px; margin: 0 auto; box-shadow: var(--shadow);">
+        <form method="POST" action="{% url 'nominate' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" name="name" placeholder="الاسم الكامل للمرشح" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            </div>
+            <div class="form-group">
+                <select name="type" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                    <option value="">نوع الترشيح</option>
+                    <option value="innovator">💡 مبتكر</option>
+                    <option value="initiative">🤝 مبادرة</option>
+                    <option value="project">📋 مشروع</option>
+                    <option value="university">🏛️ من قلب جامعة قنا</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" name="title" placeholder="العنوان / التخصص / المنصب" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            </div>
+            <div class="form-group">
+                <textarea name="description" rows="5" placeholder="وصف مفصل لسبب الترشيح والإنجازات البارزة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
+            </div>
+            
+            <button type="submit" class="hero-btn hero-btn-primary" style="width:100%; cursor:pointer;">
+                إرسال الترشيح للمراجعة
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

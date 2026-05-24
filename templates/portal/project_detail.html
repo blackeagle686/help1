@@ -1,0 +1,77 @@
+{% extends 'portal/base.html' %}
+{% load portal_extras %}
+
+{% block title %}{{ project.title }} - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <button class="back-btn" onclick="location.href='{% url 'projects' %}?type=project'">
+        <i class="fas fa-arrow-right"></i> عودة
+    </button>
+    
+    <h1 class="detail-title">{{ project.title }}</h1>
+    {% if project.video %}
+        <div class="detail-video">
+            <iframe src="{{ project.video|embed_video }}" allowfullscreen></iframe>
+        </div>
+    {% endif %}
+    
+    <div class="detail-meta">
+        <span><i class="fas fa-user"></i> {{ project.innovator_name }}</span>
+        <span><i class="fas fa-university"></i> {{ project.faculty }}</span>
+        <span><i class="fas fa-calendar"></i> {{ project.date|date:"Y-m-d" }}</span>
+        <span><i class="fas fa-eye"></i> {{ project.views }} مشاهدة</span>
+    </div>
+    
+    <div class="detail-content">
+        {% if project.news_content %}
+            <h3 style="margin-top: 2rem;">أخبار ومستجدات المشروع</h3>
+            <p>{{ project.news_content|linebreaks }}</p>
+        {% endif %}
+
+        <h3 style="margin-top: 2rem;">معرض الصور</h3>
+        <div class="detail-gallery">
+            {% for img in project.images %}
+                <div class="gallery-item" style="background-image: url('{{ img }}'); cursor: pointer;" onclick="window.open('{{ img }}', '_blank')"></div>
+            {% empty %}
+                <div class="gallery-item" style="background: linear-gradient(135deg, var(--primary), var(--accent));"></div>
+                <div class="gallery-item" style="background: linear-gradient(135deg, var(--accent), var(--primary-dark));"></div>
+                <div class="gallery-item" style="background: linear-gradient(135deg, var(--primary-dark), var(--accent));"></div>
+            {% endfor %}
+        </div>
+
+        <br>
+        <h3>عن المشروع</h3>
+        <p>{{ project.description|linebreaks }}</p>
+        
+        <h3 style="margin-top: 2rem;">فريق العمل</h3>
+        <ul style="list-style: none; padding: 0;">
+            {% for member in project.team %}
+                <li><i class="fas fa-user-circle" style="color: var(--accent);"></i> {{ member }}</li>
+            {% empty %}
+                <li><i class="fas fa-user-circle" style="color: var(--accent);"></i> {{ project.innovator_name }}</li>
+            {% endfor %}
+        </ul>
+        
+        
+    </div>
+    
+    {% if user.is_authenticated %}
+        {% if user.profile.user_type == 'investor' %}
+            <button class="support-btn" style="background: var(--primary); margin-bottom: 10px;" onclick="expressInterest('project', '{{ project.pk }}')">
+                <i class="fas fa-hand-holding-heart"></i> أنا مهتم بدعم هذا المشروع
+            </button>
+        {% endif %}
+        
+        {% if project.innovator %}
+            <button class="support-btn" onclick="initiateChat('project', '{{ project.pk }}', '{{ project.innovator.pk }}')">
+                <i class="fas fa-comments"></i> تواصل مع المبتكر {{ project.innovator_name }}
+            </button>
+        {% else %}
+            <button class="support-btn" onclick="initiateChat('project', '{{ project.pk }}', '')">
+                <i class="fas fa-comments"></i> تواصل مع الإدارة بخصوص هذا المشروع
+            </button>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

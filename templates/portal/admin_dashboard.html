@@ -1,0 +1,435 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}لوحة الإدارة - بصمة قنا{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <i class="fas fa-crown" style="color: var(--accent); font-size: 2rem;"></i>
+                <span style="font-size: 1.8rem; font-weight: 700; margin-right: 1rem;">لوحة التحكم - الإدارة</span>
+            </div>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="#" onclick="showChatModal(); return false;" class="hero-btn hero-btn-primary" style="background: var(--primary); text-decoration: none;">
+                    <i class="fas fa-comments"></i> المحادثات
+                </a>
+                <a href="{% url 'admin_export_data' %}" class="hero-btn hero-btn-primary" style="text-decoration: none;">
+                    <i class="fas fa-download"></i> تصدير البيانات
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="admin-stats">
+            <div class="stat-card">
+                <h3>إجمالي المستخدمين</h3>
+                <div class="number">{{ users_list.count|add:1 }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>المبتكرين</h3>
+                <div class="number">{{ users_list|length }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>إجمالي المشاريع</h3>
+                <div class="number">{{ projects_list.count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>صناع الأثر</h3>
+                <div class="number">{{ storymakers.count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>المبادرات</h3>
+                <div class="number">{{ initiatives.count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>الترشيحات</h3>
+                <div class="number">{{ nominations.count }}</div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="admin-tabs">
+            <div class="admin-tab active" onclick="switchAdminTab('users')">المستخدمين</div>
+            <div class="admin-tab" onclick="switchAdminTab('projects')">المشاريع</div>
+            <div class="admin-tab" onclick="switchAdminTab('investors')">طلبات المستثمرين</div>
+            <div class="admin-tab" onclick="switchAdminTab('nominations')">📋 طلبات الترشيح</div>
+            <div class="admin-tab" onclick="switchAdminTab('storyMakers')">🌟 صُنّاع الأثر</div>
+            <div class="admin-tab" onclick="switchAdminTab('initiatives')">🚀 المبادرات</div>
+            <div class="admin-tab" onclick="switchAdminTab('files')">📁 الملفات</div>
+            <div class="admin-tab" onclick="switchAdminTab('danger')">⚠️ خطر</div>
+        </div>
+
+        <!-- Quick Add Buttons -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <button class="hero-btn hero-btn-primary" onclick="showModal('add-project-modal')">
+                <i class="fas fa-plus"></i> إضافة مشروع
+            </button>
+            <button class="hero-btn hero-btn-primary" style="background: var(--primary);" onclick="showModal('add-initiative-modal')">
+                <i class="fas fa-plus"></i> إضافة مبادرة
+            </button>
+            <button class="hero-btn hero-btn-primary" style="background: var(--accent-dark);" onclick="showModal('add-maker-modal')">
+                <i class="fas fa-plus"></i> إضافة صانع أثر
+            </button>
+        </div>
+
+        <!-- ===== Users Tab ===== -->
+        <div id="admin-users" style="display: block;">
+            <h3 style="margin-bottom: 1rem;">قائمة المستخدمين</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>النوع</th>
+                            <th>الحالة</th>
+                            <th>تاريخ التسجيل</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for up in users_list %}
+                            <tr>
+                                <td>{{ up.user.first_name|default:up.user.username }}</td>
+                                <td>{{ up.user.email }}</td>
+                                <td>
+                                    {% if up.user_type == 'admin' %}👑 إدارة
+                                    {% elif up.user_type == 'innovator' %}💡 مبتكر
+                                    {% elif up.user_type == 'investor' %}💰 مستثمر
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if up.status == 'active' %}<span class="badge-verified">نشط</span>
+                                    {% else %}<span class="badge-pending">معلق</span>{% endif %}
+                                </td>
+                                <td>{{ up.join_date|date:"Y-m-d" }}</td>
+                                <td>
+                                    <a href="{% url 'admin_delete_user' up.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا المستخدم؟')">حذف</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="6" style="text-align: center;">لا يوجد مستخدمين آخرين.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Projects Tab ===== -->
+        <div id="admin-projects" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">إدارة المشاريع</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>عنوان المشروع</th>
+                            <th>المبتكر</th>
+                            <th>التصنيف</th>
+                            <th>الحالة</th>
+                            <th>المشاهدات</th>
+                            <th>الاهتمام</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in projects_list %}
+                            <tr>
+                                <td>{{ p.title }}</td>
+                                <td>{{ p.innovator_name }}</td>
+                                <td>{{ p.category }}</td>
+                                <td>
+                                    {% if p.status == 'verified' %}
+                                        <span class="badge-verified">✅ موثق</span>
+                                    {% else %}
+                                        <span class="badge-pending">⏳ معلق</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ p.views }}</td>
+                                <td>{{ p.interested }}</td>
+                                <td>
+                                    {% if p.status == 'pending' %}
+                                        <a href="{% url 'admin_approve_project' p.pk %}" class="action-btn btn-approve">قبول</a>
+                                    {% endif %}
+                                    <a href="{% url 'admin_delete_project' p.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا المشروع؟')">حذف</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="7" style="text-align: center;">لا توجد مشاريع.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Investors Tab ===== -->
+        <div id="admin-investors" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">طلبات المستثمرين المعلقة</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم الجهة</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>نوع المستثمر</th>
+                            <th>تاريخ الطلب</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for up in users_list %}
+                            {% if up.user_type == 'investor' and up.status == 'pending' %}
+                                <tr>
+                                    <td>{{ up.company|default:up.user.first_name }}</td>
+                                    <td>{{ up.user.email }}</td>
+                                    <td>{{ up.investor_type|default:'غير محدد' }}</td>
+                                    <td>{{ up.join_date|date:"Y-m-d" }}</td>
+                                    <td>
+                                        <a href="{% url 'admin_approve_investor' up.pk %}" class="action-btn btn-approve">تفعيل</a>
+                                        <a href="{% url 'admin_delete_user' up.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد؟')">رفض</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Nominations Tab ===== -->
+        <div id="admin-nominations" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">طلبات الترشيح</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>النوع</th>
+                            <th>العنوان</th>
+                            <th>الحالة</th>
+                            <th>التاريخ</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for nom in nominations %}
+                            <tr>
+                                <td>{{ nom.name }}</td>
+                                <td>{{ nom.get_type_display }}</td>
+                                <td>{{ nom.title|default:'-' }}</td>
+                                <td>
+                                    {% if nom.status == 'approved' %}<span class="badge-verified">مقبول</span>
+                                    {% elif nom.status == 'added' %}<span class="badge-verified">تمت الإضافة</span>
+                                    {% else %}<span class="badge-pending">قيد المراجعة</span>{% endif %}
+                                </td>
+                                <td>{{ nom.date|date:"Y-m-d" }}</td>
+                                <td>
+                                    {% if nom.status == 'pending' %}
+                                        <a href="{% url 'admin_approve_nomination' nom.pk %}" class="action-btn btn-approve">قبول</a>
+                                        <a href="{% url 'admin_reject_nomination' nom.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد من رفض هذا الترشيح؟')">رفض</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="6" style="text-align: center;">لا توجد ترشيحات.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Story Makers Tab ===== -->
+        <div id="admin-storyMakers" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">إدارة صُنّاع الأثر</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>المنصب</th>
+                            <th>الوصف</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in storymakers %}
+                            <tr>
+                                <td>{{ m.name }}</td>
+                                <td>{{ m.title }}</td>
+                                <td>{{ m.description|truncatewords:10 }}</td>
+                                <td>
+                                    <a href="{% url 'admin_delete_story_maker' m.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد؟')">حذف</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="4" style="text-align: center;">لا يوجد صناع أثر.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Initiatives Tab ===== -->
+        <div id="admin-initiatives" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">إدارة المبادرات</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>عنوان المبادرة</th>
+                            <th>المؤسس</th>
+                            <th>الإنجازات</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for init in initiatives %}
+                            <tr>
+                                <td>{{ init.title }}</td>
+                                <td>{{ init.founder }}</td>
+                                <td>{{ init.achievements|join:", "|default:"قيد التحديث" }}</td>
+                                <td>
+                                    <a href="{% url 'admin_delete_initiative' init.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد؟')">حذف</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="4" style="text-align: center;">لا توجد مبادرات.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Files Tab ===== -->
+        <div id="admin-files" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">إدارة الملفات</h3>
+            <div style="background: white; border-radius: 20px; padding: 2rem; margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1rem;">رفع ملف جديد</h4>
+                <form method="POST" action="{% url 'upload_file' %}" enctype="multipart/form-data" id="file-upload-form">
+                    {% csrf_token %}
+                    <input type="text" name="file_name" placeholder="اسم الملف" style="width:100%; padding:0.8rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                    <input type="file" name="file_upload" accept=".pdf" style="margin-bottom:1rem;" required>
+                    <button type="submit" style="background:var(--accent); color:white; border:none; padding:0.8rem 2rem; border-radius:10px; cursor:pointer;">رفع الملف</button>
+                </form>
+            </div>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم الملف</th>
+                            <th>التاريخ</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in files %}
+                            <tr>
+                                <td>{{ f.name }}</td>
+                                <td>{{ f.date|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'download_file' f.pk %}" class="action-btn btn-approve"><i class="fas fa-download"></i> تنزيل</a>
+                                    <a href="{% url 'delete_file' f.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد من حذف الملف؟')">حذف</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="3" style="text-align: center;">لا توجد ملفات.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Danger Zone Tab ===== -->
+        <div id="admin-danger" style="display: none;">
+            <h3 style="margin-bottom: 1rem; color: #EF4444;">⚠️ منطقة الخطر</h3>
+            <div style="background: white; border-radius: 20px; padding: 2rem;">
+                <p style="color: #64748B; margin-bottom: 2rem;">هذه العمليات لا يمكن التراجع عنها. تأكد جيداً قبل التنفيذ.</p>
+                <a href="{% url 'admin_clear_all_data' %}" class="hero-btn" style="background: #EF4444; color: white; text-decoration: none; display: inline-block;" onclick="return confirm('⚠️ هذا الإجراء سيحذف جميع البيانات نهائياً. هل أنت متأكد؟')">
+                    <i class="fas fa-trash"></i> مسح جميع البيانات
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add Project Modal -->
+<div class="modal" id="add-project-modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <span class="close-modal" onclick="closeModal('add-project-modal')">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">إضافة مشروع جديد</h2>
+        <form method="POST" action="{% url 'admin_add_project' %}">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="عنوان المشروع" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <input type="url" name="video" placeholder="رابط الفيديو (YouTube embed / Google Drive preview)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <input type="url" name="image" placeholder="رابط الصورة الرئيسية" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <input type="url" name="cover_image" placeholder="رابط صورة الغلاف (Banner)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <textarea name="news_content" rows="3" placeholder="أخبار ومستجدات المشروع (اختياري)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;"></textarea>
+            <input type="text" name="faculty" placeholder="الكلية / التخصص" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <select name="category" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                <option value="عام">عام</option>
+                <option value="هندسة">هندسة وتكنولوجيا</option>
+                <option value="ذكاء اصطناعي">ذكاء اصطناعي</option>
+                <option value="بيئة">بيئة وطاقة</option>
+                <option value="طب">علوم طبية</option>
+            </select>
+            <input type="text" name="innovator" placeholder="اسم المبتكر" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <textarea name="description" rows="4" placeholder="وصف المشروع" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
+            <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ المشروع</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Initiative Modal -->
+<div class="modal" id="add-initiative-modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <span class="close-modal" onclick="closeModal('add-initiative-modal')">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">إضافة مبادرة جديدة</h2>
+        <form method="POST" action="{% url 'admin_add_initiative' %}">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="عنوان المبادرة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <input type="text" name="founder" placeholder="اسم المؤسس" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <textarea name="description" rows="4" placeholder="وصف المبادرة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
+            <input type="url" name="video" placeholder="رابط الفيديو (YouTube embed)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <button type="submit" style="width:100%; padding:1rem; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ المبادرة</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Maker Modal -->
+<div class="modal" id="add-maker-modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <span class="close-modal" onclick="closeModal('add-maker-modal')">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">إضافة صانع أثر</h2>
+        <form method="POST" action="{% url 'admin_add_maker' %}">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="الاسم الكامل" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <input type="text" name="title" placeholder="المنصب / اللقب" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <textarea name="description" rows="4" placeholder="وصف ونبذة عن الشخصية" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
+            <input type="url" name="video" placeholder="رابط الفيديو (YouTube embed)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <input type="url" name="image" placeholder="رابط الصورة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <button type="submit" style="width:100%; padding:1rem; background:var(--accent-dark, #B79F6A); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ صانع الأثر</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchAdminTab(tab) {
+        // Hide all tabs
+        const tabs = ['users', 'projects', 'investors', 'nominations', 'storyMakers', 'initiatives', 'files', 'danger'];
+        tabs.forEach(t => {
+            const el = document.getElementById('admin-' + t);
+            if (el) el.style.display = 'none';
+        });
+        
+        // Show selected tab
+        const target = document.getElementById('admin-' + tab);
+        if (target) target.style.display = 'block';
+        
+        // Update active state on tab buttons
+        document.querySelectorAll('.admin-tab').forEach(el => el.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+</script>
+{% endblock %}

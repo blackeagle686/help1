@@ -1,0 +1,67 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}لوحة المستثمر - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 2.5rem; color: var(--primary-dark);"><i class="fas fa-chart-line" style="color: var(--accent);"></i> لوحة المستثمر</h2>
+            <p style="color: #64748B;">مرحباً {{ request.user.first_name|default:request.user.username }}</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <button class="hero-btn hero-btn-primary" onclick="showChatModal()" style="background: var(--primary);">
+                <i class="fas fa-comments"></i> المحادثات
+            </button>
+            <a href="{% url 'projects' %}" class="hero-btn hero-btn-primary" style="text-decoration: none;">
+                <i class="fas fa-search"></i> تصفح المشاريع
+            </a>
+        </div>
+    </div>
+    
+    <!-- Investor Info Card -->
+    <div class="dashboard-card" style="margin-bottom: 2rem;">
+        <h3><i class="fas fa-id-card" style="color: var(--accent);"></i> بيانات المستثمر</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div>
+                <strong>الجهة / الشركة:</strong>
+                <p style="color: #64748B;">{{ profile.company|default:'غير محدد' }}</p>
+            </div>
+            <div>
+                <strong>نوع المستثمر:</strong>
+                <p style="color: #64748B;">{{ profile.investor_type|default:'غير محدد' }}</p>
+            </div>
+            <div>
+                <strong>مجال الاستثمار:</strong>
+                <p style="color: #64748B;">{{ profile.investment_field|default:'غير محدد' }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Support History -->
+    <div class="dashboard-card">
+        <h3><i class="fas fa-hand-holding-heart" style="color: var(--accent);"></i> 📊 سجل الاهتمامات والدعم</h3>
+        {% for item in support_history %}
+            <div class="interest-item">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4>{{ item.itemName }}</h4>
+                        <p style="color: #64748B;">{{ item.message }}</p>
+                    </div>
+                    <div>
+                        {% if item.itemType == 'project' %}
+                            <span class="badge-verified">📋 مشروع</span>
+                        {% elif item.itemType == 'initiative' %}
+                            <span class="badge-pending">🤝 مبادرة</span>
+                        {% elif item.itemType == 'maker' %}
+                            <span class="badge-verified">🌟 صانع أثر</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: #64748B; padding: 1rem; text-align: center;">لم يتم إبداء اهتمام بعد. تصفح المشاريع والمبادرات وعبّر عن اهتمامك بدعمها!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
