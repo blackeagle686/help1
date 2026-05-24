@@ -278,7 +278,10 @@
                         <tr>
                             <th>عنوان المبادرة</th>
                             <th>المؤسس</th>
-                            <th>الإنجازات</th>
+                            <th>التصنيف</th>
+                            <th>الحالة</th>
+                            <th>المشاهدات</th>
+                            <th>الاهتمام</th>
                             <th>إجراءات</th>
                         </tr>
                     </thead>
@@ -287,13 +290,25 @@
                             <tr>
                                 <td>{{ init.title }}</td>
                                 <td>{{ init.founder }}</td>
-                                <td>{{ init.achievements|join:", "|default:"قيد التحديث" }}</td>
+                                <td>{{ init.category }}</td>
                                 <td>
+                                    {% if init.status == 'verified' %}
+                                        <span class="badge-verified">✅ موثق</span>
+                                    {% else %}
+                                        <span class="badge-pending">⏳ معلق</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ init.views }}</td>
+                                <td>{{ init.interested }}</td>
+                                <td>
+                                    {% if init.status == 'pending' %}
+                                        <a href="{% url 'admin_approve_initiative' init.pk %}" class="action-btn btn-approve">قبول</a>
+                                    {% endif %}
                                     <a href="{% url 'admin_delete_initiative' init.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد؟')">حذف</a>
                                 </td>
                             </tr>
                         {% empty %}
-                            <tr><td colspan="4" style="text-align: center;">لا توجد مبادرات.</td></tr>
+                            <tr><td colspan="7" style="text-align: center;">لا توجد مبادرات.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -383,15 +398,28 @@
 <div class="modal" id="add-initiative-modal">
     <div class="modal-content" style="max-width: 600px;">
         <span class="close-modal" onclick="closeModal('add-initiative-modal')">&times;</span>
-        <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">إضافة مبادرة جديدة</h2>
-        <form method="POST" action="{% url 'admin_add_initiative' %}">
-            {% csrf_token %}
-            <input type="text" name="title" placeholder="عنوان المبادرة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
-            <input type="text" name="founder" placeholder="اسم المؤسس" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
-            <textarea name="description" rows="4" placeholder="وصف المبادرة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
-            <input type="url" name="video" placeholder="رابط الفيديو (YouTube embed)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
-            <button type="submit" style="width:100%; padding:1rem; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ المبادرة</button>
-        </form>
+        <div style="max-height: 70vh; overflow-y: auto; padding: 1rem;">
+            <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">إضافة مبادرة جديدة</h2>
+            <form method="POST" action="{% url 'admin_add_initiative' %}">
+                {% csrf_token %}
+                <input type="text" name="title" placeholder="عنوان المبادرة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                <input type="text" name="founder" placeholder="اسم المؤسس" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                <textarea name="description" rows="4" placeholder="وصف المبادرة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
+                <input type="url" name="video" placeholder="رابط الفيديو (YouTube embed / Google Drive preview)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                <input type="url" name="image" placeholder="رابط الصورة الرئيسية" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                <input type="url" name="cover_image" placeholder="رابط صورة الغلاف (Banner)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                <textarea name="news_content" rows="3" placeholder="أخبار ومستجدات المبادرة (اختياري)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;"></textarea>
+                <select name="category" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                    <option value="عام">عام</option>
+                    <option value="تعليم">تعليم</option>
+                    <option value="صحة">صحة</option>
+                    <option value="بيئة">بيئة</option>
+                    <option value="مجتمع">مجتمع</option>
+                    <option value="تكنولوجيا">تكنولوجيا</option>
+                </select>
+                <button type="submit" style="width:100%; padding:1rem; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ المبادرة</button>
+            </form>
+        </div>
     </div>
 </div>
 

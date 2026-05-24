@@ -93,12 +93,27 @@ class Project(models.Model):
 
 
 class Initiative(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'قيد المراجعة'),
+        ('verified', 'موثق'),
+    ]
+
     title = models.CharField(max_length=200)
-    founder = models.CharField(max_length=150)
-    description = models.TextField()
+    founder = models.CharField(max_length=150)  # اسم المؤسس (نص للتوافق)
+    innovator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='initiatives', blank=True, null=True)
+    category = models.CharField(max_length=50, default='عام')
     image = models.URLField(max_length=500, blank=True, null=True)
+    cover_image = models.URLField(max_length=500, blank=True, null=True)
     video = models.URLField(max_length=500, blank=True, null=True)
+    description = models.TextField()
+    team = models.JSONField(default=list, blank=True)  # قائمة أسماء الفريق
+    images = models.JSONField(default=list, blank=True)  # قائمة روابط معرض الصور
     achievements = models.JSONField(default=list, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    views = models.PositiveIntegerField(default=0)
+    interested = models.PositiveIntegerField(default=0)
+    ip_status = models.CharField(max_length=50, default='idea')  # فكرة، مسجلة، قيد التسجيل
+    news_content = models.TextField(blank=True, null=True)  # أخبار ومستجدات المبادرة
     date = models.DateField(auto_now_add=True)
     support_requests = models.JSONField(default=list, blank=True)
 

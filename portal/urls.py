@@ -44,6 +44,7 @@ urlpatterns = [
     path('admin/delete-project/<int:pk>/', views.admin_delete_project, name='admin_delete_project'),
     path('admin/edit-project/<int:pk>/', views.admin_edit_project, name='admin_edit_project'),
     path('admin/edit-initiative/<int:pk>/', views.admin_edit_initiative, name='admin_edit_initiative'),
+    path('admin/approve-initiative/<int:pk>/', views.admin_approve_initiative, name='admin_approve_initiative'),
     path('admin/delete-initiative/<int:pk>/', views.admin_delete_initiative, name='admin_delete_initiative'),
     path('admin/edit-story-maker/<int:pk>/', views.admin_edit_story_maker, name='admin_edit_story_maker'),
     path('admin/delete-story-maker/<int:pk>/', views.admin_delete_story_maker, name='admin_delete_story_maker'),

@@ -9,21 +9,49 @@
         <i class="fas fa-arrow-right"></i> عودة
     </button>
     
+    <h1 class="detail-title">{{ initiative.title }}</h1>
     {% if initiative.video %}
         <div class="detail-video">
             <iframe src="{{ initiative.video|embed_video }}" allowfullscreen></iframe>
         </div>
     {% endif %}
     
-    <h1 class="detail-title">{{ initiative.title }}</h1>
     <div class="detail-meta">
-        <span><i class="fas fa-user"></i> مؤسس المبادرة: {{ initiative.founder }}</span>
+        <span><i class="fas fa-user"></i> {{ initiative.founder }}</span>
+        <span><i class="fas fa-tag"></i> {{ initiative.category }}</span>
         <span><i class="fas fa-calendar"></i> {{ initiative.date|date:"Y-m-d" }}</span>
+        <span><i class="fas fa-eye"></i> {{ initiative.views }} مشاهدة</span>
     </div>
     
     <div class="detail-content">
+        {% if initiative.news_content %}
+            <h3 style="margin-top: 2rem;">أخبار ومستجدات المبادرة</h3>
+            <p>{{ initiative.news_content|linebreaks }}</p>
+        {% endif %}
+
+        <h3 style="margin-top: 2rem;">معرض الصور</h3>
+        <div class="detail-gallery">
+            {% for img in initiative.images %}
+                <div class="gallery-item" style="background-image: url('{{ img }}'); cursor: pointer;" onclick="window.open('{{ img }}', '_blank')"></div>
+            {% empty %}
+                <div class="gallery-item" style="background: linear-gradient(135deg, var(--primary), var(--accent));"></div>
+                <div class="gallery-item" style="background: linear-gradient(135deg, var(--accent), var(--primary-dark));"></div>
+                <div class="gallery-item" style="background: linear-gradient(135deg, var(--primary-dark), var(--accent));"></div>
+            {% endfor %}
+        </div>
+
+        <br>
         <h3>عن المبادرة</h3>
         <p>{{ initiative.description|linebreaks }}</p>
+        
+        <h3 style="margin-top: 2rem;">فريق العمل</h3>
+        <ul style="list-style: none; padding: 0;">
+            {% for member in initiative.team %}
+                <li><i class="fas fa-user-circle" style="color: var(--accent);"></i> {{ member }}</li>
+            {% empty %}
+                <li><i class="fas fa-user-circle" style="color: var(--accent);"></i> {{ initiative.founder }}</li>
+            {% endfor %}
+        </ul>
         
         <h3 style="margin-top: 2rem;">إنجازات المبادرة</h3>
         <ul>
@@ -42,9 +70,15 @@
             </button>
         {% endif %}
         
-        <button class="support-btn" onclick="initiateChat('initiative', '{{ initiative.pk }}', '')">
-            <i class="fas fa-comments"></i> تواصل مع القائمين على المبادرة
-        </button>
+        {% if initiative.innovator %}
+            <button class="support-btn" onclick="initiateChat('initiative', '{{ initiative.pk }}', '{{ initiative.innovator.pk }}')">
+                <i class="fas fa-comments"></i> تواصل مع المؤسس {{ initiative.founder }}
+            </button>
+        {% else %}
+            <button class="support-btn" onclick="initiateChat('initiative', '{{ initiative.pk }}', '')">
+                <i class="fas fa-comments"></i> تواصل مع القائمين على المبادرة
+            </button>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

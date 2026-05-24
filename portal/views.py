@@ -51,7 +51,7 @@ def projects_list(request):
     p_type = request.GET.get('type', 'all')
     
     projects_qs = Project.objects.filter(status='verified')
-    initiatives_qs = Initiative.objects.all()
+    initiatives_qs = Initiative.objects.filter(status='verified')
     
     if category:
         projects_qs = projects_qs.filter(category=category)
@@ -198,11 +198,13 @@ def dashboard(request):
     elif profile.user_type == 'innovator':
         # Innovator Dashboard Data
         my_projects = Project.objects.filter(innovator=request.user)
+        my_initiatives = Initiative.objects.filter(innovator=request.user)
         notifications = profile.notifications[::-1]  # Latest first
         
         context = {
             'profile': profile,
             'projects': my_projects,
+            'initiatives': my_initiatives,
             'notifications': notifications,
         }
         return render(request, 'portal/innovator_dashboard.html', context)
@@ -235,6 +237,8 @@ def project_detail(request, pk):
 
 def initiative_detail(request, pk):
     initiative = get_object_or_404(Initiative, pk=pk)
+    initiative.views += 1
+    initiative.save()
     context = {'initiative': initiative}
     return render(request, 'portal/initiative_detail.html', context)
 
@@ -613,6 +617,16 @@ def admin_edit_initiative(request, pk):
     return redirect('dashboard')
 
 @login_required
+def admin_approve_initiative(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    initiative = get_object_or_404(Initiative, pk=pk)
+    initiative.status = 'verified'
+    initiative.save()
+    messages.success(request, 'تم توثيق المبادرة بنجاح.')
+    return redirect('dashboard')
+
+@login_required
 def admin_delete_initiative(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -769,6 +783,10 @@ def admin_add_initiative(request):
         founder = request.POST.get('founder')
         description = request.POST.get('description')
         video = request.POST.get('video')
+        image = request.POST.get('image')
+        cover_image = request.POST.get('cover_image')
+        news_content = request.POST.get('news_content')
+        category = request.POST.get('category')
         
         if title and founder and description:
             Initiative.objects.create(
@@ -776,7 +794,11 @@ def admin_add_initiative(request):
                 founder=founder,
                 description=description,
                 video=video,
-                image=f"https://via.placeholder.com/400x300/e2e8f0/000000?text={title}",
+                image=image or f"https://via.placeholder.com/400x300/e2e8f0/000000?text={title}",
+                cover_image=cover_image or None,
+                news_content=news_content or None,
+                category=category or 'عام',
+                status='verified'
             )
             messages.success(request, 'تم إضافة المبادرة بنجاح.')
     return redirect('dashboard')
@@ -884,9 +906,15 @@ def innovator_add_project(request):
             Initiative.objects.create(
                 title=title,
                 founder=request.user.first_name or request.user.username,
+                innovator=request.user,
                 description=description,
                 video=video,
                 image=cover_image or f"https://via.placeholder.com/400x300/e2e8f0/000000?text={title}",
+                cover_image=cover_image or f"https://via.placeholder.com/800x400/e2e8f0/000000?text={title}",
+                team=team_members,
+                images=gallery_images,
+                ip_status=ip_status,
+                status='pending',
                 achievements=['قيد التحديث']
             )
             
