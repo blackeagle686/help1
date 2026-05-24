@@ -9,7 +9,7 @@ def main():
     
     print("[*] Opening tunnel on port 8000...")
     try:
-        tunnel = ngrok.connect(8000)
+        tunnel = ngrok.connect(8005)
         print(f"\n==============================================\n")
         print(f"🚀 NGROK PUBLIC URL: {tunnel.public_url}")
         print(f"\n==============================================\n")

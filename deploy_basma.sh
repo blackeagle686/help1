@@ -81,7 +81,7 @@ echo -e "${BLUE}[*] Starting Django & Ngrok in background...${CLEAR}"
 # Truncate log file
 > "$LOG_FILE"
 
-nohup python3 manage.py runserver 127.0.0.1:8000 >> "$LOG_FILE" 2>&1 &
+nohup python3 manage.py runserver 127.0.0.1:8005 >> "$LOG_FILE" 2>&1 &
 nohup python3 start_ngrok.py >> "$LOG_FILE" 2>&1 &
 
 echo -e "${GREEN}[✔] Django and Ngrok started in background!${CLEAR}"
