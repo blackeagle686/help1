@@ -26,6 +26,7 @@ if [ "$1" == "stop" ]; then
     echo -e "${RED}[*] Stopping Django server and Ngrok...${CLEAR}"
     pkill -f "manage.py runserver" || true
     pkill -f "start_ngrok.py" || true
+    pkill -x ngrok || true
     echo -e "${GREEN}[✔] Stopped successfully.${CLEAR}"
     exit 0
 fi
@@ -38,6 +39,7 @@ echo -e "${BLUE}==============================================${CLEAR}"
 echo -e "${BLUE}[*] Stopping existing instances...${CLEAR}"
 pkill -f "manage.py runserver" || true
 pkill -f "start_ngrok.py" || true
+pkill -x ngrok || true
 
 # 1. Check for Virtual Environment
 if [ -d "venv" ]; then
