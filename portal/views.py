@@ -92,6 +92,7 @@ def nominate(request):
 
 # ===== AUTHENTICATION =====
 
+@csrf_exempt
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -121,6 +122,7 @@ def login_view(request):
             
     return redirect('home')
 
+@csrf_exempt
 def register_view(request):
     if request.method == 'POST':
         user_type = request.POST.get('type')
@@ -546,6 +548,7 @@ def send_message(request, chat_id):
 # ===== ADMIN ACTIONS =====
 
 @login_required
+@csrf_exempt
 def admin_approve_investor(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -556,6 +559,7 @@ def admin_approve_investor(request, pk):
     return redirect('dashboard')
 
 @login_required
+@csrf_exempt
 def admin_delete_user(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -567,6 +571,7 @@ def admin_delete_user(request, pk):
     return redirect('dashboard')
 
 @login_required
+@csrf_exempt
 def admin_approve_project(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -577,6 +582,7 @@ def admin_approve_project(request, pk):
     return redirect('dashboard')
 
 @login_required
+@csrf_exempt
 def admin_delete_project(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -617,6 +623,7 @@ def admin_edit_initiative(request, pk):
     return redirect('dashboard')
 
 @login_required
+@csrf_exempt
 def admin_approve_initiative(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -627,6 +634,7 @@ def admin_approve_initiative(request, pk):
     return redirect('dashboard')
 
 @login_required
+@csrf_exempt
 def admin_delete_initiative(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -652,6 +660,7 @@ def admin_edit_story_maker(request, pk):
     return redirect('dashboard')
 
 @login_required
+@csrf_exempt
 def admin_delete_story_maker(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -669,6 +678,7 @@ def admin_nomination_details(request, pk):
     return render(request, 'portal/admin_nomination_detail.html', context)
 
 @login_required
+@csrf_exempt
 def admin_approve_nomination(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -679,6 +689,7 @@ def admin_approve_nomination(request, pk):
     return redirect('dashboard')
 
 @login_required
+@csrf_exempt
 def admin_reject_nomination(request, pk):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
@@ -826,6 +837,7 @@ def admin_add_maker(request):
     return redirect('dashboard')
 
 @login_required
+@csrf_exempt
 def admin_clear_all_data(request):
     if not request.user.profile.user_type == 'admin':
         return redirect('home')
