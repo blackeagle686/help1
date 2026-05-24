@@ -229,6 +229,8 @@ def dashboard(request):
 
 def story_detail(request, pk):
     maker = get_object_or_404(StoryMaker, pk=pk)
+    maker.views += 1
+    maker.save()
     context = {'maker': maker}
     return render(request, 'portal/story_detail.html', context)
 
@@ -657,8 +659,22 @@ def admin_edit_story_maker(request, pk):
         maker.description = request.POST.get('description')
         maker.video = request.POST.get('video')
         maker.image = request.POST.get('image')
+        maker.cover_image = request.POST.get('cover_image')
+        maker.news_content = request.POST.get('news_content')
+        maker.category = request.POST.get('category')
         maker.save()
         messages.success(request, 'تم تحديث صانع الأثر بنجاح.')
+    return redirect('dashboard')
+
+@login_required
+@csrf_exempt
+def admin_approve_story_maker(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    maker = get_object_or_404(StoryMaker, pk=pk)
+    maker.status = 'verified'
+    maker.save()
+    messages.success(request, 'تم توثيق صانع الأثر بنجاح.')
     return redirect('dashboard')
 
 @login_required
@@ -826,6 +842,10 @@ def admin_add_maker(request):
         title = request.POST.get('title')
         description = request.POST.get('description')
         video = request.POST.get('video')
+        image = request.POST.get('image')
+        cover_image = request.POST.get('cover_image')
+        news_content = request.POST.get('news_content')
+        category = request.POST.get('category')
         
         if name and title and description:
             StoryMaker.objects.create(
@@ -833,7 +853,11 @@ def admin_add_maker(request):
                 title=title,
                 description=description,
                 video=video,
-                image=f"https://via.placeholder.com/400x300/3b82f6/ffffff?text={name}",
+                image=image or f"https://via.placeholder.com/400x300/3b82f6/ffffff?text={name}",
+                cover_image=cover_image or None,
+                news_content=news_content or None,
+                category=category or 'عام',
+                status='verified'
             )
             messages.success(request, 'تم إضافة صانع الأثر بنجاح.')
     return redirect('dashboard')

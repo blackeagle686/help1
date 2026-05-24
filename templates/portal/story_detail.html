@@ -9,20 +9,49 @@
         <i class="fas fa-arrow-right"></i> عودة
     </button>
     
+    <h1 class="detail-title">{{ maker.name }}</h1>
     {% if maker.video %}
         <div class="detail-video">
             <iframe src="{{ maker.video|embed_video }}" allowfullscreen></iframe>
         </div>
     {% endif %}
     
-    <h1 class="detail-title">{{ maker.name }}</h1>
     <div class="detail-meta">
         <span><i class="fas fa-briefcase"></i> {{ maker.title }}</span>
+        <span><i class="fas fa-tag"></i> {{ maker.category }}</span>
+        <span><i class="fas fa-calendar"></i> {{ maker.date|date:"Y-m-d" }}</span>
+        <span><i class="fas fa-eye"></i> {{ maker.views }} مشاهدة</span>
     </div>
     
     <div class="detail-content">
+        {% if maker.news_content %}
+            <h3 style="margin-top: 2rem;">أخبار ومستجدات صانع الأثر</h3>
+            <p>{{ maker.news_content|linebreaks }}</p>
+        {% endif %}
+
+        <h3 style="margin-top: 2rem;">معرض الصور</h3>
+        <div class="detail-gallery">
+            {% for img in maker.images %}
+                <div class="gallery-item" style="background-image: url('{{ img }}'); cursor: pointer;" onclick="window.open('{{ img }}', '_blank')"></div>
+            {% empty %}
+                <div class="gallery-item" style="background: linear-gradient(135deg, var(--primary), var(--accent));"></div>
+                <div class="gallery-item" style="background: linear-gradient(135deg, var(--accent), var(--primary-dark));"></div>
+                <div class="gallery-item" style="background: linear-gradient(135deg, var(--primary-dark), var(--accent));"></div>
+            {% endfor %}
+        </div>
+
+        <br>
         <h3>السيرة الذاتية</h3>
         <p>{{ maker.full_story|default:maker.description|default:'السيرة الذاتية قيد التحديث'|linebreaks }}</p>
+        
+        <h3 style="margin-top: 2rem;">فريق العمل / الشركاء</h3>
+        <ul style="list-style: none; padding: 0;">
+            {% for member in maker.team %}
+                <li><i class="fas fa-user-circle" style="color: var(--accent);"></i> {{ member }}</li>
+            {% empty %}
+                <li><i class="fas fa-user-circle" style="color: var(--accent);"></i> {{ maker.name }}</li>
+            {% endfor %}
+        </ul>
         
         <h3 style="margin-top: 2rem;">الإنجازات</h3>
         <ul>
@@ -33,7 +62,7 @@
             {% endfor %}
         </ul>
         
-        <h3 style="margin-top: 2rem;">أخبار</h3>
+        <h3 style="margin-top: 2rem;">أخبار إضافية</h3>
         <ul>
             {% for news_item in maker.news %}
                 <li>{{ news_item }}</li>
@@ -46,10 +75,10 @@
     {% if user.is_authenticated %}
         {% if user.profile.user_type == 'investor' %}
             <button class="support-btn" onclick="expressInterest('maker', '{{ maker.pk }}')" style="background-color: var(--primary); margin-bottom: 10px;">
-                <i class="fas fa-hand-holding-usd"></i> إبداء الاهتمام بدعم النموذج
+                <i class="fas fa-hand-holding-usd"></i> إبداء الاهتمام بدعم صانع الأثر
             </button>
         {% endif %}
-        <button class="support-btn" onclick="initiateChat('maker', '{{ maker.pk }}')">
+        <button class="support-btn" onclick="initiateChat('maker', '{{ maker.pk }}', '')">
             <i class="fas fa-comments"></i> تواصل مع {{ maker.name }}
         </button>
     {% endif %}

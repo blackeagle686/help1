@@ -49,14 +49,27 @@ def save_user_profile(sender, instance, **kwargs):
 
 
 class StoryMaker(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'قيد المراجعة'),
+        ('verified', 'موثق'),
+    ]
+
     name = models.CharField(max_length=150)
     title = models.CharField(max_length=150)
+    category = models.CharField(max_length=50, default='عام')
     image = models.URLField(max_length=500, blank=True, null=True)
+    cover_image = models.URLField(max_length=500, blank=True, null=True)
     video = models.URLField(max_length=500, blank=True, null=True)
     description = models.TextField()
     full_story = models.TextField(blank=True, null=True)
+    team = models.JSONField(default=list, blank=True)  # قائمة أسماء الفريق
+    images = models.JSONField(default=list, blank=True)  # قائمة روابط معرض الصور
     achievements = models.JSONField(default=list, blank=True)
     news = models.JSONField(default=list, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    views = models.PositiveIntegerField(default=0)
+    interested = models.PositiveIntegerField(default=0)
+    news_content = models.TextField(blank=True, null=True)  # أخبار ومستجدات صانع الأثر
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -47,6 +47,7 @@ urlpatterns = [
     path('admin/approve-initiative/<int:pk>/', views.admin_approve_initiative, name='admin_approve_initiative'),
     path('admin/delete-initiative/<int:pk>/', views.admin_delete_initiative, name='admin_delete_initiative'),
     path('admin/edit-story-maker/<int:pk>/', views.admin_edit_story_maker, name='admin_edit_story_maker'),
+    path('admin/approve-story-maker/<int:pk>/', views.admin_approve_story_maker, name='admin_approve_story_maker'),
     path('admin/delete-story-maker/<int:pk>/', views.admin_delete_story_maker, name='admin_delete_story_maker'),
     path('admin/nomination-details/<int:pk>/', views.admin_nomination_details, name='admin_nomination_details'),
     path('admin/approve-nomination/<int:pk>/', views.admin_approve_nomination, name='admin_approve_nomination'),
