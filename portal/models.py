@@ -194,3 +194,16 @@ class UploadedFile(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Podcast(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    video = models.URLField(max_length=500, blank=True, null=True)  # رابط فيديو يوتيوب أو غوغل درايف
+    audio = models.URLField(max_length=500, blank=True, null=True)  # رابط صوت خارجي
+    audio_file = models.FileField(upload_to='podcasts/', blank=True, null=True)  # ملف صوتي مرفوع
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+

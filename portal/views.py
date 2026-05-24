@@ -12,7 +12,7 @@ import os
 
 from .models import (
     UserProfile, StoryMaker, Project, Initiative,
-    Nomination, ChatMessage, BreakingNews, UploadedFile
+    Nomination, ChatMessage, BreakingNews, UploadedFile, Podcast
 )
 
 # ===== MAIN PAGES =====
@@ -187,6 +187,7 @@ def dashboard(request):
         initiatives = Initiative.objects.all()
         nominations = Nomination.objects.all().order_by('-date')
         files = UploadedFile.objects.all().order_by('-date')
+        podcasts = Podcast.objects.all().order_by('-date')
         
         context = {
             'profile': profile,
@@ -196,6 +197,7 @@ def dashboard(request):
             'initiatives': initiatives,
             'nominations': nominations,
             'files': files,
+            'podcasts': podcasts,
         }
         return render(request, 'portal/admin_dashboard.html', context)
         
@@ -603,9 +605,15 @@ def admin_edit_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     if request.method == 'POST':
         project.title = request.POST.get('title')
+        project.innovator_name = request.POST.get('innovator_name', project.innovator_name)
+        project.faculty = request.POST.get('faculty', project.faculty)
         project.description = request.POST.get('description')
         project.category = request.POST.get('category')
-        project.status = request.POST.get('status')
+        project.image = request.POST.get('image')
+        project.cover_image = request.POST.get('cover_image')
+        project.video = request.POST.get('video')
+        project.ip_status = request.POST.get('ip_status')
+        project.news_content = request.POST.get('news_content')
         project.save()
         messages.success(request, 'تم تحديث المشروع بنجاح.')
     return redirect('dashboard')
@@ -620,6 +628,11 @@ def admin_edit_initiative(request, pk):
         initiative.title = request.POST.get('title')
         initiative.founder = request.POST.get('founder')
         initiative.description = request.POST.get('description')
+        initiative.category = request.POST.get('category')
+        initiative.image = request.POST.get('image')
+        initiative.cover_image = request.POST.get('cover_image')
+        initiative.video = request.POST.get('video')
+        initiative.news_content = request.POST.get('news_content')
         achievements_input = request.POST.get('achievements', '')
         initiative.achievements = [a.strip() for a in achievements_input.split(',') if a.strip()]
         initiative.save()
@@ -962,3 +975,68 @@ def innovator_add_project(request):
         return JsonResponse({'status': 'success', 'message': 'تم إضافة المشروع بنجاح! بانتظار مراجعة الإدارة'})
         
     return JsonResponse({'status': 'error', 'message': 'طريقة غير صالحة'})
+
+
+# ===== PODCAST VIEWS =====
+
+def podcast_list(request):
+    podcasts = Podcast.objects.all().order_by('-date')
+    context = {'podcasts': podcasts}
+    return render(request, 'portal/podcast_list.html', context)
+
+@login_required
+@csrf_exempt
+def admin_add_podcast(request):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        video = request.POST.get('video')
+        audio = request.POST.get('audio')
+        audio_file = request.FILES.get('audio_file')
+        
+        if title and description:
+            Podcast.objects.create(
+                title=title,
+                description=description,
+                video=video or None,
+                audio=audio or None,
+                audio_file=audio_file or None
+            )
+            messages.success(request, 'تم إضافة البودكاست بنجاح.')
+    return redirect('dashboard')
+
+@login_required
+@csrf_exempt
+def admin_edit_podcast(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    podcast = get_object_or_404(Podcast, pk=pk)
+    if request.method == 'POST':
+        podcast.title = request.POST.get('title')
+        podcast.description = request.POST.get('description')
+        podcast.video = request.POST.get('video')
+        podcast.audio = request.POST.get('audio')
+        if request.FILES.get('audio_file'):
+            podcast.audio_file = request.FILES.get('audio_file')
+        podcast.save()
+        messages.success(request, 'تم تحديث البودكاست بنجاح.')
+    return redirect('dashboard')
+
+@login_required
+@csrf_exempt
+def admin_delete_podcast(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    podcast = get_object_or_404(Podcast, pk=pk)
+    if podcast.audio_file:
+        try:
+            if os.path.exists(podcast.audio_file.path):
+                os.remove(podcast.audio_file.path)
+        except Exception:
+            pass
+    podcast.delete()
+    messages.success(request, 'تم حذف البودكاست بنجاح.')
+    return redirect('dashboard')
+

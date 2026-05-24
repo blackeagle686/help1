@@ -59,6 +59,12 @@ urlpatterns = [
     path('admin/clear-all-data/', views.admin_clear_all_data, name='admin_clear_all_data'),
     path('admin/export-data/', views.admin_export_data, name='admin_export_data'),
     
+    # Podcasts
+    path('podcast/', views.podcast_list, name='podcast_list'),
+    path('admin/add-podcast/', views.admin_add_podcast, name='admin_add_podcast'),
+    path('admin/edit-podcast/<int:pk>/', views.admin_edit_podcast, name='admin_edit_podcast'),
+    path('admin/delete-podcast/<int:pk>/', views.admin_delete_podcast, name='admin_delete_podcast'),
+    
     # Innovator Actions
     path('innovator/add-project/', views.innovator_add_project, name='innovator_add_project'),
 ]

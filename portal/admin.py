@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     UserProfile, StoryMaker, Project, Initiative,
-    Nomination, ChatMessage, BreakingNews, UploadedFile
+    Nomination, ChatMessage, BreakingNews, UploadedFile, Podcast
 )
 
 @admin.register(UserProfile)
@@ -47,3 +47,8 @@ class BreakingNewsAdmin(admin.ModelAdmin):
 class UploadedFileAdmin(admin.ModelAdmin):
     list_display = ('name', 'date')
     search_fields = ('name',)
+
+@admin.register(Podcast)
+class PodcastAdmin(admin.ModelAdmin):
+    list_display = ('title', 'date')
+    search_fields = ('title', 'description')

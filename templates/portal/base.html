@@ -28,6 +28,7 @@
                 <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}"><i class="fas fa-home"></i> الرئيسية</a>
                 <a class="nav-link {% if request.resolver_match.url_name == 'story' or request.resolver_match.url_name == 'story_detail' %}active{% endif %}" href="{% url 'story' %}"><i class="fas fa-star"></i> صناع الأثر</a>
                 <a class="nav-link {% if request.resolver_match.url_name == 'projects' or request.resolver_match.url_name == 'project_detail' or request.resolver_match.url_name == 'initiative_detail' %}active{% endif %}" href="{% url 'projects' %}"><i class="fas fa-lightbulb"></i> المشاريع والمبادرات</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'podcast_list' %}active{% endif %}" href="{% url 'podcast_list' %}"><i class="fas fa-microphone"></i> البودكاست</a>
                 <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}"><i class="fas fa-info-circle"></i> عن بصمة</a>
                 <a class="nav-link {% if request.resolver_match.url_name == 'nominate' %}active{% endif %}" href="{% url 'nominate' %}"><i class="fas fa-user-plus"></i> رشح نموذج</a>
                 
@@ -87,6 +88,7 @@
                     <li><a href="{% url 'home' %}">الرئيسية</a></li>
                     <li><a href="{% url 'story' %}">صناع الأثر</a></li>
                     <li><a href="{% url 'projects' %}">المشاريع والمبادرات</a></li>
+                    <li><a href="{% url 'podcast_list' %}">البودكاست</a></li>
                     <li><a href="{% url 'about' %}">عن بصمة</a></li>
                 </ul>
             </div>
@@ -256,6 +258,10 @@
         <a href="{% url 'projects' %}" class="{% if request.resolver_match.url_name == 'projects' %}active{% endif %}">
             <i class="fas fa-lightbulb"></i>
             <span>المشاريع</span>
+        </a>
+        <a href="{% url 'podcast_list' %}" class="{% if request.resolver_match.url_name == 'podcast_list' %}active{% endif %}">
+            <i class="fas fa-microphone"></i>
+            <span>البودكاست</span>
         </a>
         <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">
             <i class="fas fa-info-circle"></i>

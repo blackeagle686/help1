@@ -56,6 +56,7 @@
             <div class="admin-tab" onclick="switchAdminTab('nominations')">📋 طلبات الترشيح</div>
             <div class="admin-tab" onclick="switchAdminTab('storyMakers')">🌟 صُنّاع الأثر</div>
             <div class="admin-tab" onclick="switchAdminTab('initiatives')">🚀 المبادرات</div>
+            <div class="admin-tab" onclick="switchAdminTab('podcasts')">🎙️ البودكاست</div>
             <div class="admin-tab" onclick="switchAdminTab('files')">📁 الملفات</div>
             <div class="admin-tab" onclick="switchAdminTab('danger')">⚠️ خطر</div>
         </div>
@@ -70,6 +71,9 @@
             </button>
             <button class="hero-btn hero-btn-primary" style="background: var(--accent-dark);" onclick="showModal('add-maker-modal')">
                 <i class="fas fa-plus"></i> إضافة صانع أثر
+            </button>
+            <button class="hero-btn hero-btn-primary" style="background: #a855f7;" onclick="showModal('add-podcast-modal')">
+                <i class="fas fa-plus"></i> إضافة بودكاست
             </button>
         </div>
 
@@ -145,15 +149,67 @@
                                         <span class="badge-pending">⏳ معلق</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ p.views }}</td>
-                                <td>{{ p.interested }}</td>
                                 <td>
                                     {% if p.status == 'pending' %}
                                         <a href="{% url 'admin_approve_project' p.pk %}" class="action-btn btn-approve">قبول</a>
                                     {% endif %}
+                                    <button class="action-btn btn-approve" style="background: var(--primary); border: none;" onclick="showModal('edit-project-modal-{{ p.pk }}')">تعديل</button>
                                     <a href="{% url 'admin_delete_project' p.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا المشروع؟')">حذف</a>
                                 </td>
                             </tr>
+                            
+                            <!-- Edit Project Modal -->
+                            <div class="modal" id="edit-project-modal-{{ p.pk }}">
+                                <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+                                    <span class="close-modal" onclick="closeModal('edit-project-modal-{{ p.pk }}')">&times;</span>
+                                    <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">تعديل مشروع: {{ p.title }}</h2>
+                                    <form method="POST" action="{% url 'admin_edit_project' p.pk %}">
+                                        {% csrf_token %}
+                                        <div style="max-height: 65vh; overflow-y: auto; padding-left: 10px;">
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">عنوان المشروع</label>
+                                            <input type="text" name="title" value="{{ p.title }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">اسم المبتكر</label>
+                                            <input type="text" name="innovator_name" value="{{ p.innovator_name }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">الكلية / التخصص</label>
+                                            <input type="text" name="faculty" value="{{ p.faculty }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الصورة الرئيسية</label>
+                                            <input type="url" name="image" value="{{ p.image|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط صورة الغلاف</label>
+                                            <input type="url" name="cover_image" value="{{ p.cover_image|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الفيديو (YouTube embed / Google Drive preview)</label>
+                                            <input type="url" name="video" value="{{ p.video|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">التصنيف</label>
+                                            <select name="category" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                                <option value="عام" {% if p.category == 'عام' %}selected{% endif %}>عام</option>
+                                                <option value="هندسة" {% if p.category == 'هندسة' %}selected{% endif %}>هندسة وتكنولوجيا</option>
+                                                <option value="ذكاء اصطناعي" {% if p.category == 'ذكاء اصطناعي' %}selected{% endif %}>ذكاء اصطناعي</option>
+                                                <option value="بيئة" {% if p.category == 'بيئة' %}selected{% endif %}>بيئة وطاقة</option>
+                                                <option value="طب" {% if p.category == 'طب' %}selected{% endif %}>علوم طبية</option>
+                                            </select>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">حالة الملكية الفكرية</label>
+                                            <select name="ip_status" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                                <option value="idea" {% if p.ip_status == 'idea' %}selected{% endif %}>فكرة</option>
+                                                <option value="registered" {% if p.ip_status == 'registered' %}selected{% endif %}>مسجلة</option>
+                                                <option value="pending" {% if p.ip_status == 'pending' %}selected{% endif %}>قيد التسجيل</option>
+                                            </select>
+
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">أخبار ومستجدات المشروع</label>
+                                            <textarea name="news_content" rows="3" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">{{ p.news_content|default:'' }}</textarea>
+
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">وصف المشروع</label>
+                                            <textarea name="description" rows="4" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>{{ p.description }}</textarea>
+                                        </div>
+                                        <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:1rem;">تحديث البيانات</button>
+                                    </form>
+                                </div>
+                            </div>
                         {% empty %}
                             <tr><td colspan="7" style="text-align: center;">لا توجد مشاريع.</td></tr>
                         {% endfor %}
@@ -273,9 +329,54 @@
                                     {% if m.status == 'pending' %}
                                         <a href="{% url 'admin_approve_story_maker' m.pk %}" class="action-btn btn-approve">قبول</a>
                                     {% endif %}
+                                    <button class="action-btn btn-approve" style="background: var(--primary); border: none;" onclick="showModal('edit-story-modal-{{ m.pk }}')">تعديل</button>
                                     <a href="{% url 'admin_delete_story_maker' m.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد؟')">حذف</a>
                                 </td>
                             </tr>
+                            
+                            <!-- Edit Story Maker Modal -->
+                            <div class="modal" id="edit-story-modal-{{ m.pk }}">
+                                <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+                                    <span class="close-modal" onclick="closeModal('edit-story-modal-{{ m.pk }}')">&times;</span>
+                                    <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">تعديل صانع أثر: {{ m.name }}</h2>
+                                    <form method="POST" action="{% url 'admin_edit_story_maker' m.pk %}">
+                                        {% csrf_token %}
+                                        <div style="max-height: 65vh; overflow-y: auto; padding-left: 10px;">
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">الاسم الكامل</label>
+                                            <input type="text" name="name" value="{{ m.name }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">المنصب / اللقب</label>
+                                            <input type="text" name="title" value="{{ m.title }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الصورة الرئيسية</label>
+                                            <input type="url" name="image" value="{{ m.image|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط صورة الغلاف</label>
+                                            <input type="url" name="cover_image" value="{{ m.cover_image|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الفيديو (YouTube embed / Google Drive preview)</label>
+                                            <input type="url" name="video" value="{{ m.video|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">التصنيف</label>
+                                            <select name="category" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                                <option value="عام" {% if m.category == 'عام' %}selected{% endif %}>عام</option>
+                                                <option value="علوم وتكنولوجيا" {% if m.category == 'علوم وتكنولوجيا' %}selected{% endif %}>علوم وتكنولوجيا</option>
+                                                <option value="طب وصحة" {% if m.category == 'طب وصحة' %}selected{% endif %}>طب وصحة</option>
+                                                <option value="زراعة وبيئة" {% if m.category == 'زراعة وبيئة' %}selected{% endif %}>زراعة وبيئة</option>
+                                                <option value="عمل مجتمعي" {% if m.category == 'عمل مجتمعي' %}selected{% endif %}>عمل مجتمعي</option>
+                                                <option value="ريادة أعمال" {% if m.category == 'ريادة أعمال' %}selected{% endif %}>ريادة أعمال</option>
+                                            </select>
+
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">أخبار ومستجدات صانع الأثر</label>
+                                            <textarea name="news_content" rows="3" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">{{ m.news_content|default:'' }}</textarea>
+
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">وصف ونبذة عن الشخصية</label>
+                                            <textarea name="description" rows="4" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>{{ m.description }}</textarea>
+                                        </div>
+                                        <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:1rem;">تحديث البيانات</button>
+                                    </form>
+                                </div>
+                            </div>
                         {% empty %}
                             <tr><td colspan="7" style="text-align: center;">لا يوجد صناع أثر.</td></tr>
                         {% endfor %}
@@ -319,11 +420,144 @@
                                     {% if init.status == 'pending' %}
                                         <a href="{% url 'admin_approve_initiative' init.pk %}" class="action-btn btn-approve">قبول</a>
                                     {% endif %}
+                                    <button class="action-btn btn-approve" style="background: var(--primary); border: none;" onclick="showModal('edit-initiative-modal-{{ init.pk }}')">تعديل</button>
                                     <a href="{% url 'admin_delete_initiative' init.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد؟')">حذف</a>
                                 </td>
                             </tr>
+                            
+                            <!-- Edit Initiative Modal -->
+                            <div class="modal" id="edit-initiative-modal-{{ init.pk }}">
+                                <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+                                    <span class="close-modal" onclick="closeModal('edit-initiative-modal-{{ init.pk }}')">&times;</span>
+                                    <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">تعديل مبادرة: {{ init.title }}</h2>
+                                    <form method="POST" action="{% url 'admin_edit_initiative' init.pk %}">
+                                        {% csrf_token %}
+                                        <div style="max-height: 65vh; overflow-y: auto; padding-left: 10px;">
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">عنوان المبادرة</label>
+                                            <input type="text" name="title" value="{{ init.title }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">اسم المؤسس</label>
+                                            <input type="text" name="founder" value="{{ init.founder }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الصورة الرئيسية</label>
+                                            <input type="url" name="image" value="{{ init.image|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط صورة الغلاف</label>
+                                            <input type="url" name="cover_image" value="{{ init.cover_image|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الفيديو (YouTube embed / Google Drive preview)</label>
+                                            <input type="url" name="video" value="{{ init.video|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">التصنيف</label>
+                                            <select name="category" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                                <option value="عام" {% if init.category == 'عام' %}selected{% endif %}>عام</option>
+                                                <option value="تعليم" {% if init.category == 'تعليم' %}selected{% endif %}>تعليم</option>
+                                                <option value="صحة" {% if init.category == 'صحة' %}selected{% endif %}>صحة</option>
+                                                <option value="بيئة" {% if init.category == 'بيئة' %}selected{% endif %}>بيئة</option>
+                                                <option value="مجتمع" {% if init.category == 'مجتمع' %}selected{% endif %}>مجتمع</option>
+                                                <option value="تكنولوجيا" {% if init.category == 'تكنولوجيا' %}selected{% endif %}>تكنولوجيا</option>
+                                            </select>
+
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">أخبار ومستجدات المبادرة</label>
+                                            <textarea name="news_content" rows="3" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">{{ init.news_content|default:'' }}</textarea>
+
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">الإنجازات (مفصولة بفاصلة)</label>
+                                            <input type="text" name="achievements" value="{{ init.achievements|join:', ' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">وصف المبادرة</label>
+                                            <textarea name="description" rows="4" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>{{ init.description }}</textarea>
+                                        </div>
+                                        <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:1rem;">تحديث البيانات</button>
+                                    </form>
+                                </div>
+                            </div>
                         {% empty %}
                             <tr><td colspan="7" style="text-align: center;">لا توجد مبادرات.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Podcasts Tab ===== -->
+        <div id="admin-podcasts" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">إدارة حلقات البودكاست</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>العنوان</th>
+                            <th>رابط الفيديو</th>
+                            <th>رابط الصوت</th>
+                            <th>الملف الصوتي</th>
+                            <th>تاريخ النشر</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pod in podcasts %}
+                            <tr>
+                                <td>{{ pod.title }}</td>
+                                <td>
+                                    {% if pod.video %}
+                                        <a href="{{ pod.video }}" target="_blank" style="color: var(--primary); text-decoration: underline;">رابط الفيديو</a>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if pod.audio %}
+                                        <a href="{{ pod.audio }}" target="_blank" style="color: var(--primary); text-decoration: underline;">رابط الصوت</a>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if pod.audio_file %}
+                                        <a href="{{ pod.audio_file.url }}" target="_blank" style="color: var(--primary); text-decoration: underline;">ملف مرفوع</a>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ pod.date|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    <button class="action-btn btn-approve" style="background: var(--primary); border: none;" onclick="showModal('edit-podcast-modal-{{ pod.pk }}')">تعديل</button>
+                                    <a href="{% url 'admin_delete_podcast' pod.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذه الحلقة؟')">حذف</a>
+                                </td>
+                            </tr>
+                            
+                            <!-- Edit Podcast Modal -->
+                            <div class="modal" id="edit-podcast-modal-{{ pod.pk }}">
+                                <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+                                    <span class="close-modal" onclick="closeModal('edit-podcast-modal-{{ pod.pk }}')">&times;</span>
+                                    <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">تعديل بودكاست: {{ pod.title }}</h2>
+                                    <form method="POST" action="{% url 'admin_edit_podcast' pod.pk %}" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div style="max-height: 65vh; overflow-y: auto; padding-left: 10px;">
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">عنوان الحلقة</label>
+                                            <input type="text" name="title" value="{{ pod.title }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الفيديو (YouTube embed / Google Drive preview)</label>
+                                            <input type="url" name="video" value="{{ pod.video|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الصوت الخارجي</label>
+                                            <input type="url" name="audio" value="{{ pod.audio|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رفع ملف صوتي جديد (اختياري)</label>
+                                            {% if pod.audio_file %}
+                                                <p style="font-size: 0.9rem; color: #64748B; margin-bottom: 0.5rem;">الملف الحالي: <a href="{{ pod.audio_file.url }}" target="_blank">{{ pod.audio_file.name }}</a></p>
+                                            {% endif %}
+                                            <input type="file" name="audio_file" accept="audio/*" style="width:100%; padding:0.5rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">وصف مبسط</label>
+                                            <textarea name="description" rows="4" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>{{ pod.description }}</textarea>
+                                        </div>
+                                        <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:1rem;">تحديث البيانات</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <tr><td colspan="6" style="text-align: center;">لا توجد حلقات بودكاست مضافة حالياً.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -466,13 +700,33 @@
         </div>
     </div>
 </div>
+
+<!-- Add Podcast Modal -->
+<div class="modal" id="add-podcast-modal">
+    <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+        <span class="close-modal" onclick="closeModal('add-podcast-modal')">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">إضافة حلقة بودكاست جديدة</h2>
+        <form method="POST" action="{% url 'admin_add_podcast' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="عنوان الحلقة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <input type="url" name="video" placeholder="رابط الفيديو (YouTube embed / Google Drive preview)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <input type="url" name="audio" placeholder="رابط الصوت الخارجي" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            
+            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رفع ملف صوتي (اختياري)</label>
+            <input type="file" name="audio_file" accept="audio/*" style="width:100%; padding:0.5rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            
+            <textarea name="description" rows="4" placeholder="وصف مبسط للحلقة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
+            <button type="submit" style="width:100%; padding:1rem; background:#a855f7; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ الحلقة</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     function switchAdminTab(tab) {
         // Hide all tabs
-        const tabs = ['users', 'projects', 'investors', 'nominations', 'storyMakers', 'initiatives', 'files', 'danger'];
+        const tabs = ['users', 'projects', 'investors', 'nominations', 'storyMakers', 'initiatives', 'podcasts', 'files', 'danger'];
         tabs.forEach(t => {
             const el = document.getElementById('admin-' + t);
             if (el) el.style.display = 'none';
