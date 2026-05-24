@@ -49,7 +49,6 @@ if [ "$1" == "stop" ]; then
         rm -f .ngrok.pid
     fi
 
-    pkill -x ngrok || true
     echo -e "${GREEN}[✔] Stopped successfully.${CLEAR}"
     exit 0
 fi
@@ -81,8 +80,6 @@ if [ -f ".ngrok.pid" ]; then
     kill -9 "$NGROK_PID" 2>/dev/null || true
     rm -f .ngrok.pid
 fi
-
-pkill -x ngrok || true
 
 # 1. Check for Virtual Environment
 if [ -d "venv" ]; then

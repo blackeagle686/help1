@@ -2,7 +2,6 @@ import os
 import sys
 import time
 import signal
-import subprocess
 from pyngrok import ngrok
 from pyngrok.exception import PyngrokNgrokError
 
@@ -11,10 +10,10 @@ PORT = 8005
 
 def cleanup_existing_tunnels():
     """
-    Check if there are any active tunnels locally and disconnect them,
-    then kill any existing ngrok system processes to avoid auth and port conflicts.
+    Check if there is an active tunnel for our specific port (8005) and disconnect it,
+    and kill our previously saved ngrok PID to avoid interrupting other ngrok sessions.
     """
-    print("[*] Checking for and cleaning up existing ngrok tunnels/processes...")
+    print("[*] Checking for and cleaning up this project's ngrok tunnel/process...")
     
     # 1. Kill ngrok PID from saved file if exists
     try:
@@ -32,24 +31,17 @@ def cleanup_existing_tunnels():
     except Exception as e:
         print(f"[*] Could not kill process from .ngrok.pid: {e}")
 
-    # 2. Check local ngrok API for active tunnels
+    # 2. Check local ngrok API for active tunnels on our target port and disconnect them
     try:
         tunnels = ngrok.get_tunnels()
         for tunnel in tunnels:
-            print(f"[!] Disconnecting existing tunnel: {tunnel.public_url}")
-            ngrok.disconnect(tunnel.public_url)
+            config = getattr(tunnel, "config", {})
+            addr = config.get("addr", "")
+            if str(PORT) in str(addr):
+                print(f"[!] Disconnecting our active tunnel: {tunnel.public_url} (addr: {addr})")
+                ngrok.disconnect(tunnel.public_url)
     except Exception as e:
-        print(f"[*] No active local tunnels detected via API: {e}")
-
-    # 3. Fallback: kill any other ngrok processes
-    try:
-        print("[*] Killing existing ngrok system processes...")
-        # Terminate any running ngrok binary process to release the token session
-        subprocess.run(["pkill", "-x", "ngrok"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        time.sleep(1.5) # Give it a moment to release ports/connections
-        print("[✔] Cleanup complete.")
-    except Exception as e:
-        print(f"[*] Error while killing ngrok processes: {e}")
+        print(f"[*] No active tunnels on port {PORT} detected: {e}")
 
 def main():
     # Clean up before setting token and connecting
