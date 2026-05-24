@@ -63,11 +63,13 @@ else
     exit 1
 fi
 
-# 3. Database Migrations
+# 3. Database Migrations and Seeding
 echo -e "${BLUE}[*] جاري تحضير وتطبيق قواعد البيانات (Migrations)...${CLEAR}"
 python3 manage.py makemigrations portal
 python3 manage.py migrate
-echo -e "${GREEN}[✔] تم تطبيق قاعدة البيانات بنجاح.${CLEAR}"
+echo -e "${BLUE}[*] جاري استيراد البيانات الافتراضية (Seeding)...${CLEAR}"
+python3 manage.py seed_data
+echo -e "${GREEN}[✔] تم تطبيق قاعدة البيانات واستيراد البيانات بنجاح.${CLEAR}"
 
 # 4. Collect Static Files
 echo -e "${BLUE}[*] جاري تجميع الملفات الثابتة (Static Files)...${CLEAR}"
