@@ -24,8 +24,31 @@ fi
 # Check for "stop" command
 if [ "$1" == "stop" ]; then
     echo -e "${RED}[*] Stopping Django server and Ngrok...${CLEAR}"
-    pkill -f "manage.py runserver" || true
-    pkill -f "start_ngrok.py" || true
+    if [ -f ".django.pid" ]; then
+        DJANGO_PID=$(cat .django.pid)
+        echo -e "${BLUE}[*] Killing existing Django PID $DJANGO_PID...${CLEAR}"
+        kill -9 "$DJANGO_PID" 2>/dev/null || true
+        rm -f .django.pid
+    else
+        pkill -f "manage.py runserver" || true
+    fi
+
+    if [ -f ".ngrok_wrapper.pid" ]; then
+        WRAPPER_PID=$(cat .ngrok_wrapper.pid)
+        echo -e "${BLUE}[*] Killing existing Ngrok wrapper PID $WRAPPER_PID...${CLEAR}"
+        kill -9 "$WRAPPER_PID" 2>/dev/null || true
+        rm -f .ngrok_wrapper.pid
+    else
+        pkill -f "start_ngrok.py" || true
+    fi
+
+    if [ -f ".ngrok.pid" ]; then
+        NGROK_PID=$(cat .ngrok.pid)
+        echo -e "${BLUE}[*] Killing existing Ngrok PID $NGROK_PID...${CLEAR}"
+        kill -9 "$NGROK_PID" 2>/dev/null || true
+        rm -f .ngrok.pid
+    fi
+
     pkill -x ngrok || true
     echo -e "${GREEN}[✔] Stopped successfully.${CLEAR}"
     exit 0
@@ -37,8 +60,28 @@ echo -e "${BLUE}==============================================${CLEAR}"
 
 # Terminate existing sessions to avoid port conflicts
 echo -e "${BLUE}[*] Stopping existing instances...${CLEAR}"
-pkill -f "manage.py runserver" || true
-pkill -f "start_ngrok.py" || true
+if [ -f ".django.pid" ]; then
+    DJANGO_PID=$(cat .django.pid)
+    kill -9 "$DJANGO_PID" 2>/dev/null || true
+    rm -f .django.pid
+else
+    pkill -f "manage.py runserver" || true
+fi
+
+if [ -f ".ngrok_wrapper.pid" ]; then
+    WRAPPER_PID=$(cat .ngrok_wrapper.pid)
+    kill -9 "$WRAPPER_PID" 2>/dev/null || true
+    rm -f .ngrok_wrapper.pid
+else
+    pkill -f "start_ngrok.py" || true
+fi
+
+if [ -f ".ngrok.pid" ]; then
+    NGROK_PID=$(cat .ngrok.pid)
+    kill -9 "$NGROK_PID" 2>/dev/null || true
+    rm -f .ngrok.pid
+fi
+
 pkill -x ngrok || true
 
 # 1. Check for Virtual Environment
@@ -84,7 +127,10 @@ echo -e "${BLUE}[*] Starting Django & Ngrok in background...${CLEAR}"
 > "$LOG_FILE"
 
 nohup python3 manage.py runserver 127.0.0.1:8005 >> "$LOG_FILE" 2>&1 &
+echo $! > .django.pid
+
 nohup python3 start_ngrok.py >> "$LOG_FILE" 2>&1 &
+echo $! > .ngrok_wrapper.pid
 
 echo -e "${GREEN}[✔] Django and Ngrok started in background!${CLEAR}"
 echo -e "${YELLOW}Logs are being written to $LOG_FILE${CLEAR}"
