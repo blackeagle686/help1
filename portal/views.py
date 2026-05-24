@@ -98,15 +98,17 @@ def login_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         
-        try:
-            # Check if user exists by email
-            user_obj = User.objects.get(email=email)
-            username = user_obj.username
-        except User.DoesNotExist:
-            username = email # Fallback if they entered username instead
-            
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=email, password=password)
         
+        if user is None:
+            # If not authenticated directly, try all users sharing this email
+            matching_users = User.objects.filter(email=email)
+            for u in matching_users:
+                authenticated_user = authenticate(request, username=u.username, password=password)
+                if authenticated_user is not None:
+                    user = authenticated_user
+                    break
+                    
         if user is not None:
             profile = user.profile
             if profile.user_type == 'investor' and profile.status == 'pending':
