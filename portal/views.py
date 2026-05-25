@@ -12,7 +12,7 @@ import os
 
 from .models import (
     UserProfile, StoryMaker, Project, Initiative,
-    Nomination, ChatMessage, BreakingNews, UploadedFile, Podcast
+    Nomination, ChatMessage, BreakingNews, UploadedFile, Podcast, Service, Investor
 )
 
 # ===== MAIN PAGES =====
@@ -188,6 +188,8 @@ def dashboard(request):
         nominations = Nomination.objects.all().order_by('-date')
         files = UploadedFile.objects.all().order_by('-date')
         podcasts = Podcast.objects.all().order_by('-date')
+        all_services = Service.objects.all().order_by('-date')
+        all_investors = Investor.objects.all().order_by('-date')
         
         context = {
             'profile': profile,
@@ -198,6 +200,8 @@ def dashboard(request):
             'nominations': nominations,
             'files': files,
             'podcasts': podcasts,
+            'all_services': all_services,
+            'all_investors': all_investors,
         }
         return render(request, 'portal/admin_dashboard.html', context)
         
@@ -321,11 +325,21 @@ def express_interest(request):
         elif item_type == 'maker':
             item = get_object_or_404(StoryMaker, pk=item_id)
             item_name = item.name
+        elif item_type == 'service':
+            item = get_object_or_404(Service, pk=item_id)
+            item_name = item.title
+            item.interested += 1
+            item.save()
+        elif item_type == 'investor_item':
+            item = get_object_or_404(Investor, pk=item_id)
+            item_name = item.title
+            item.interested += 1
+            item.save()
             
         if not item:
             return JsonResponse({'status': 'error', 'message': 'العنصر غير موجود'})
             
-        msg = f'أبدى المستثمر {request.user.first_name or request.user.username} اهتمامه بدعم {item_type == "maker" and "النموذج" or item_type == "project" and "المشروع" or "المبادرة"} "{item_name}"'
+        msg = f'أبدى المستثمر {request.user.first_name or request.user.username} اهتمامه بدعم {item_type == "maker" and "النموذج" or item_type == "project" and "المشروع" or item_type == "service" and "الخدمة" or item_type == "investor_item" and "المستثمر" or "المبادرة"} "{item_name}"'
         
         # Save to support requests JSON lists directly for tracking on dashboard
         support_request = {
@@ -380,6 +394,12 @@ def open_chat(request):
     elif item_type == 'maker':
         item = get_object_or_404(StoryMaker, pk=item_id)
         item_title = item.name
+    elif item_type == 'service':
+        item = get_object_or_404(Service, pk=item_id)
+        item_title = item.title
+    elif item_type == 'investor_item':
+        item = get_object_or_404(Investor, pk=item_id)
+        item_title = item.title
         
     # Generate unique conversation identity key
     # Sort IDs so order doesn't matter
@@ -531,6 +551,12 @@ def send_message(request, chat_id):
         elif item_type == 'maker':
             item = StoryMaker.objects.filter(pk=item_id).first()
             related_title = item.name if item else ''
+        elif item_type == 'service':
+            item = Service.objects.filter(pk=item_id).first()
+            related_title = item.title if item else ''
+        elif item_type == 'investor_item':
+            item = Investor.objects.filter(pk=item_id).first()
+            related_title = item.title if item else ''
             
         if not text and not attachment:
             return JsonResponse({'status': 'error', 'message': 'الرسالة فارغة'})
@@ -1040,3 +1066,123 @@ def admin_delete_podcast(request, pk):
     messages.success(request, 'تم حذف البودكاست بنجاح.')
     return redirect('dashboard')
 
+# ===== SERVICE VIEWS =====
+
+def service_list(request):
+    services = Service.objects.all().order_by('-date')
+    context = {'services': services}
+    return render(request, 'portal/service_list.html', context)
+
+def service_detail(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    service.views += 1
+    service.save()
+    context = {'service': service}
+    return render(request, 'portal/service_detail.html', context)
+
+@login_required
+@csrf_exempt
+def admin_add_service(request):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        video = request.POST.get('video')
+        image = request.POST.get('image')
+        
+        if title and description:
+            Service.objects.create(
+                title=title,
+                description=description,
+                video=video or None,
+                image=image or None
+            )
+            messages.success(request, 'تم إضافة الخدمة بنجاح.')
+    return redirect('dashboard')
+
+@login_required
+@csrf_exempt
+def admin_edit_service(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    service = get_object_or_404(Service, pk=pk)
+    if request.method == 'POST':
+        service.title = request.POST.get('title')
+        service.description = request.POST.get('description')
+        service.video = request.POST.get('video')
+        service.image = request.POST.get('image')
+        service.save()
+        messages.success(request, 'تم تحديث الخدمة بنجاح.')
+    return redirect('dashboard')
+
+@login_required
+@csrf_exempt
+def admin_delete_service(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    service = get_object_or_404(Service, pk=pk)
+    service.delete()
+    messages.success(request, 'تم حذف الخدمة بنجاح.')
+    return redirect('dashboard')
+
+# ===== INVESTOR VIEWS =====
+
+def investor_list(request):
+    investors = Investor.objects.all().order_by('-date')
+    context = {'investors': investors}
+    return render(request, 'portal/investor_list.html', context)
+
+def investor_detail(request, pk):
+    investor = get_object_or_404(Investor, pk=pk)
+    investor.views += 1
+    investor.save()
+    context = {'investor': investor}
+    return render(request, 'portal/investor_detail.html', context)
+
+@login_required
+@csrf_exempt
+def admin_add_investor(request):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        video = request.POST.get('video')
+        image = request.POST.get('image')
+        
+        if title and description:
+            Investor.objects.create(
+                title=title,
+                description=description,
+                video=video or None,
+                image=image or None
+            )
+            messages.success(request, 'تم إضافة المستثمر بنجاح.')
+    return redirect('dashboard')
+
+@login_required
+@csrf_exempt
+def admin_edit_investor(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    investor = get_object_or_404(Investor, pk=pk)
+    if request.method == 'POST':
+        investor.title = request.POST.get('title')
+        investor.description = request.POST.get('description')
+        investor.video = request.POST.get('video')
+        investor.image = request.POST.get('image')
+        investor.save()
+        messages.success(request, 'تم تحديث بيانات المستثمر بنجاح.')
+    return redirect('dashboard')
+
+@login_required
+@csrf_exempt
+def admin_delete_investor(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    investor = get_object_or_404(Investor, pk=pk)
+    investor.delete()
+    messages.success(request, 'تم حذف المستثمر بنجاح.')
+    return redirect('dashboard')
+    

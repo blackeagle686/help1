@@ -52,13 +52,15 @@
         <div class="admin-tabs">
             <div class="admin-tab active" onclick="switchAdminTab('users')">المستخدمين</div>
             <div class="admin-tab" onclick="switchAdminTab('projects')">المشاريع</div>
+            <div class="admin-tab" onclick="switchAdminTab('initiatives')">🚀 المبادرات</div>
+            <div class="admin-tab" onclick="switchAdminTab('podcasts')">🎙️ البودكاست</div>
             <div class="admin-tab" onclick="switchAdminTab('investors')">طلبات المستثمرين</div>
             <div class="admin-tab" onclick="switchAdminTab('nominations')">📋 طلبات الترشيح</div>
             <div class="admin-tab" onclick="switchAdminTab('storyMakers')">🌟 صُنّاع الأثر</div>
-            <div class="admin-tab" onclick="switchAdminTab('initiatives')">🚀 المبادرات</div>
-            <div class="admin-tab" onclick="switchAdminTab('podcasts')">🎙️ البودكاست</div>
             <div class="admin-tab" onclick="switchAdminTab('files')">📁 الملفات</div>
             <div class="admin-tab" onclick="switchAdminTab('danger')">⚠️ خطر</div>
+            <div class="admin-tab" onclick="switchAdminTab('services')">الخدمات</div>
+            <div class="admin-tab" onclick="switchAdminTab('investorShowcase')">🤝 شركاء الاستثمار</div>
         </div>
 
         <!-- Quick Add Buttons -->
@@ -74,6 +76,12 @@
             </button>
             <button class="hero-btn hero-btn-primary" style="background: #a855f7;" onclick="showModal('add-podcast-modal')">
                 <i class="fas fa-plus"></i> إضافة بودكاست
+            </button>
+            <button class="hero-btn hero-btn-primary" style="background: #a855f7;" onclick="showModal('add-service-modal')">
+                <i class="fas fa-plus"></i> إضافة خدمة
+            </button>
+            <button class="hero-btn hero-btn-primary" style="background: #14b8a6;" onclick="showModal('add-investor-modal')">
+                <i class="fas fa-plus"></i> إضافة مستثمر
             </button>
         </div>
 
@@ -212,6 +220,128 @@
                             </div>
                         {% empty %}
                             <tr><td colspan="7" style="text-align: center;">لا توجد مشاريع.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Services Tab ===== -->
+        <div id="admin-services" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">جميع الخدمات</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الخدمة</th>
+                            <th>الوصف</th>
+                            <th>الفيديو</th>
+                            <th>الصورة</th>
+                            <th>التحكم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in all_services %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ service.title }}</td>
+                                <td>{{ service.description|truncatechars:50 }}</td>
+                                <td>{{ service.video|truncatechars:50 }}</td>
+                                <td>{{ service.image|truncatechars:50 }}</td>
+                                <td>
+                                    <button class="action-btn btn-edit" style="border: none;" onclick="showModal('edit-service-modal-{{ service.pk }}')">تعديل</button>
+                                    <a href="{% url 'admin_delete_service' service.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذه الخدمة؟')">حذف</a>
+                                </td>
+                            </tr>
+                            
+                            <!-- Edit Service Modal -->
+                            <div class="modal" id="edit-service-modal-{{ service.pk }}">
+                                <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+                                    <span class="close-modal" onclick="closeModal('edit-service-modal-{{ service.pk }}')">&times;</span>
+                                    <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">تعديل خدمة: {{ service.title }}</h2>
+                                    <form method="POST" action="{% url 'admin_edit_service' service.pk %}">
+                                        {% csrf_token %}
+                                        <div style="max-height: 65vh; overflow-y: auto; padding-left: 10px;">
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">عنوان الخدمة</label>
+                                            <input type="text" name="title" value="{{ service.title }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الصورة</label>
+                                            <input type="url" name="image" value="{{ service.image|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الفيديو (YouTube embed / Google Drive preview)</label>
+                                            <input type="url" name="video" value="{{ service.video|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">الوصف</label>
+                                            <textarea name="description" rows="4" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>{{ service.description }}</textarea>
+                                        </div>
+                                        <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 1rem;">تحديث الخدمة</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <tr><td colspan="6" style="text-align: center;">لا توجد خدمات.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Investor Showcase Tab ===== -->
+        <div id="admin-investorShowcase" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">جميع شركاء الاستثمار</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>المستثمر</th>
+                            <th>الوصف</th>
+                            <th>الفيديو</th>
+                            <th>الصورة</th>
+                            <th>التحكم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for partner in all_investors %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ partner.title }}</td>
+                                <td>{{ partner.description|truncatechars:50 }}</td>
+                                <td>{{ partner.video|truncatechars:50 }}</td>
+                                <td>{{ partner.image|truncatechars:50 }}</td>
+                                <td>
+                                    <button class="action-btn btn-edit" style="border: none;" onclick="showModal('edit-investor-modal-{{ partner.pk }}')">تعديل</button>
+                                    <a href="{% url 'admin_delete_investor' partner.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا المستثمر؟')">حذف</a>
+                                </td>
+                            </tr>
+                            
+                            <!-- Edit Investor Modal -->
+                            <div class="modal" id="edit-investor-modal-{{ partner.pk }}">
+                                <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+                                    <span class="close-modal" onclick="closeModal('edit-investor-modal-{{ partner.pk }}')">&times;</span>
+                                    <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">تعديل مستثمر: {{ partner.title }}</h2>
+                                    <form method="POST" action="{% url 'admin_edit_investor' partner.pk %}">
+                                        {% csrf_token %}
+                                        <div style="max-height: 65vh; overflow-y: auto; padding-left: 10px;">
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">اسم المستثمر</label>
+                                            <input type="text" name="title" value="{{ partner.title }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الصورة</label>
+                                            <input type="url" name="image" value="{{ partner.image|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">رابط الفيديو (YouTube embed / Google Drive preview)</label>
+                                            <input type="url" name="video" value="{{ partner.video|default:'' }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">نبذة / وصف</label>
+                                            <textarea name="description" rows="4" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>{{ partner.description }}</textarea>
+                                        </div>
+                                        <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 1rem;">تحديث البيانات</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <tr><td colspan="6" style="text-align: center;">لا يوجد شركاء استثمار.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -720,13 +850,45 @@
         </form>
     </div>
 </div>
+
+<!-- Add Service Modal -->
+<div class="modal" id="add-service-modal">
+    <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+        <span class="close-modal" onclick="closeModal('add-service-modal')">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">إضافة خدمة جديدة</h2>
+        <form method="POST" action="{% url 'admin_add_service' %}">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="عنوان الخدمة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <input type="url" name="video" placeholder="رابط الفيديو (YouTube embed / Google Drive preview)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <input type="url" name="image" placeholder="رابط الصورة الرئيسية" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <textarea name="description" rows="4" placeholder="وصف الخدمة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
+            <button type="submit" style="width:100%; padding:1rem; background:#a855f7; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ الخدمة</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Investor Modal -->
+<div class="modal" id="add-investor-modal">
+    <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+        <span class="close-modal" onclick="closeModal('add-investor-modal')">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">إضافة شريك استثماري جديد</h2>
+        <form method="POST" action="{% url 'admin_add_investor' %}">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="اسم المستثمر / الجهة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <input type="url" name="video" placeholder="رابط الفيديو (YouTube embed / Google Drive preview)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <input type="url" name="image" placeholder="رابط الصورة الرئيسية" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            <textarea name="description" rows="4" placeholder="وصف ونبذة عن المستثمر" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
+            <button type="submit" style="width:100%; padding:1rem; background:#14b8a6; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ المستثمر</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     function switchAdminTab(tab) {
         // Hide all tabs
-        const tabs = ['users', 'projects', 'investors', 'nominations', 'storyMakers', 'initiatives', 'podcasts', 'files', 'danger'];
+        const tabs = ['users', 'projects', 'investors', 'nominations', 'storyMakers', 'initiatives', 'podcasts', 'files', 'danger', 'services', 'investorShowcase'];
         tabs.forEach(t => {
             const el = document.getElementById('admin-' + t);
             if (el) el.style.display = 'none';

@@ -12,9 +12,6 @@
         {% for maker in stories %}
             <div class="card" onclick="location.href='{% url 'story_detail' maker.pk %}'">
                 <div class="card-img" style="background-image: url('{{ maker.image|default:'https://via.placeholder.com/400x300/3b82f6/ffffff?text=Story+Maker' }}')">
-                    <div class="play-icon">
-                        <i class="fas fa-play"></i>
-                    </div>
                 </div>
                 <div class="card-content">
                     <h3 class="card-title">{{ maker.name }}</h3>

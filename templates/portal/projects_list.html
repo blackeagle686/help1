@@ -38,9 +38,7 @@
             {% for project in projects %}
                 <div class="card" onclick="location.href='{% url 'project_detail' project.pk %}'">
                     <div class="card-img" style="background-image: url('{{ project|card_image }}')">
-                        <div class="play-icon">
-                            <i class="fas fa-play"></i>
-                        </div>
+
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">{{ project.title }}</h3>
@@ -62,9 +60,7 @@
             {% for initiative in initiatives %}
                 <div class="card" onclick="location.href='{% url 'initiative_detail' initiative.pk %}'">
                     <div class="card-img" style="background-image: url('{{ initiative|card_image }}')">
-                        <div class="play-icon">
-                            <i class="fas fa-play"></i>
-                        </div>
+
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">{{ initiative.title }}</h3>

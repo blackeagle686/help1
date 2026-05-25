@@ -207,3 +207,27 @@ class Podcast(models.Model):
     def __str__(self):
         return self.title
 
+class Service(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    video = models.URLField(max_length=500, blank=True, null=True)  # رابط فيديو يوتيوب أو غوغل درايف
+    image = models.URLField(max_length=500, blank=True, null=True)  # رابط صورة
+    views = models.PositiveIntegerField(default=0)
+    interested = models.PositiveIntegerField(default=0)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class Investor(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    video = models.URLField(max_length=500, blank=True, null=True)  # رابط فيديو يوتيوب أو غوغل درايف
+    image = models.URLField(max_length=500, blank=True, null=True)  # رابط صورة
+    views = models.PositiveIntegerField(default=0)
+    interested = models.PositiveIntegerField(default=0)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+

@@ -1,23 +1,28 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}بصمة قنا - منصة المبدعين والمبتكرين{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700;900&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700;900&family=Cairo:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
 <body>
     <!-- HEADER -->
     <header>
         <div class="header-container">
-            <a class="logo" href="{% url 'home' %}"> 
+            <a class="logo" href="{% url 'home' %}">
                 <div class="logo-icon">
-                    <img src="{% static 'images/logo.png' %}" alt="Basma Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                    <img src="{% static 'images/logo.png' %}" alt="Basma Logo"
+                        style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
-                <span class="logo-text">بصمة قنا</span>
             </a>
 
             <div class="mobile-menu-btn" onclick="toggleMenu()">
@@ -25,29 +30,59 @@
             </div>
 
             <nav class="nav-menu" id="navMenu">
-                <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}"><i class="fas fa-home"></i> الرئيسية</a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'story' or request.resolver_match.url_name == 'story_detail' %}active{% endif %}" href="{% url 'story' %}"><i class="fas fa-star"></i> صناع الأثر</a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'projects' and request.GET.type == 'project' or request.resolver_match.url_name == 'project_detail' or request.resolver_match.url_name == 'projects' and not request.GET.type %}active{% endif %}" href="{% url 'projects' %}?type=project"><i class="fas fa-lightbulb"></i> المشاريع</a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'projects' and request.GET.type == 'initiative' or request.resolver_match.url_name == 'initiative_detail' %}active{% endif %}" href="{% url 'projects' %}?type=initiative"><i class="fas fa-rocket"></i> المبادرات</a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'podcast_list' %}active{% endif %}" href="{% url 'podcast_list' %}"><i class="fas fa-microphone"></i> البودكاست</a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}"><i class="fas fa-info-circle"></i> عن بصمة</a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'nominate' %}active{% endif %}" href="{% url 'nominate' %}"><i class="fas fa-user-plus"></i> رشح نموذج</a>
-                
+                <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                    href="{% url 'home' %}"><i class="fas fa-home"></i> الرئيسية</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'story' or request.resolver_match.url_name == 'story_detail' %}active{% endif %}"
+                    href="{% url 'story' %}"><i class="fas fa-star"></i> صناع الأثر</a>
+                <!-- Explore Dropdown (Desktop Only) -->
+                <div class="nav-link nav-dropdown desktop-only {% if request.resolver_match.url_name == 'projects' or request.resolver_match.url_name == 'project_detail' or request.resolver_match.url_name == 'initiative_detail' or request.resolver_match.url_name == 'services' or request.resolver_match.url_name == 'service_detail' or request.resolver_match.url_name == 'investors' or request.resolver_match.url_name == 'investor_detail' or request.resolver_match.url_name == 'podcast_list' %}active{% endif %}" onclick="toggleDropdown(this, event)">
+                    <span class="dropdown-trigger">
+                        <i class="fas fa-compass"></i> استكشف المنصة <i class="fas fa-chevron-down" style="font-size: 0.75rem; margin-right: 5px;"></i>
+                    </span>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'projects' %}?type=project"><i class="fas fa-lightbulb"></i> المشاريع</a>
+                        <a class="dropdown-item" href="{% url 'projects' %}?type=initiative"><i class="fas fa-rocket"></i> المبادرات</a>
+                        <a class="dropdown-item" href="{% url 'services' %}"><i class="fas fa-tools"></i> الخدمات</a>
+                        <a class="dropdown-item" href="{% url 'investors' %}"><i class="fas fa-handshake"></i> المستثمرين</a>
+                        <a class="dropdown-item" href="{% url 'podcast_list' %}"><i class="fas fa-microphone"></i> البودكاست</a>
+                    </div>
+                </div>
+
+                <!-- Flat Links (Mobile Only) -->
+                <a class="nav-link mobile-only {% if request.resolver_match.url_name == 'projects' and request.GET.type == 'project' or request.resolver_match.url_name == 'project_detail' or request.resolver_match.url_name == 'projects' and not request.GET.type %}active{% endif %}"
+                    href="{% url 'projects' %}?type=project"><i class="fas fa-lightbulb"></i> المشاريع</a>
+                <a class="nav-link mobile-only {% if request.resolver_match.url_name == 'projects' and request.GET.type == 'initiative' or request.resolver_match.url_name == 'initiative_detail' %}active{% endif %}"
+                    href="{% url 'projects' %}?type=initiative"><i class="fas fa-rocket"></i> المبادرات</a>
+                <a class="nav-link mobile-only {% if request.resolver_match.url_name == 'services' or request.resolver_match.url_name == 'service_detail' %}active{% endif %}"
+                    href="{% url 'services' %}"><i class="fas fa-tools"></i> الخدمات</a>
+                <a class="nav-link mobile-only {% if request.resolver_match.url_name == 'investors' or request.resolver_match.url_name == 'investor_detail' %}active{% endif %}"
+                    href="{% url 'investors' %}"><i class="fas fa-handshake"></i> المستثمرين</a>
+                <a class="nav-link mobile-only {% if request.resolver_match.url_name == 'podcast_list' %}active{% endif %}"
+                    href="{% url 'podcast_list' %}"><i class="fas fa-microphone"></i> البودكاست</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}"
+                    href="{% url 'about' %}"><i class="fas fa-info-circle"></i> عن بصمة</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'nominate' %}active{% endif %}"
+                    href="{% url 'nominate' %}"><i class="fas fa-user-plus"></i> رشح نموذج</a>
+
                 {% if user.is_authenticated %}
-                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
-                        {% if user.profile.user_type == 'admin' %}
-                            <i class="fas fa-crown"></i> لوحة الإدارة
-                        {% elif user.profile.user_type == 'investor' %}
-                            <i class="fas fa-chart-line"></i> لوحة المستثمر
-                        {% else %}
-                            <i class="fas fa-user-cog"></i> لوحة المبتكر
-                        {% endif %}
-                    </a>
-                    <a class="nav-link" href="#" onclick="showChatModal(); return false;"><i class="fas fa-comments"></i> المحادثات</a>
-                    <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> خروج</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                    href="{% url 'dashboard' %}">
+                    {% if user.profile.user_type == 'admin' %}
+                    <i class="fas fa-crown"></i> لوحة الإدارة
+                    {% elif user.profile.user_type == 'investor' %}
+                    <i class="fas fa-chart-line"></i> لوحة المستثمر
+                    {% else %}
+                    <i class="fas fa-user-cog"></i> لوحة المبتكر
+                    {% endif %}
+                </a>
+                <a class="nav-link" href="#" onclick="showChatModal(); return false;"><i class="fas fa-comments"></i>
+                    المحادثات</a>
+                <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> خروج</a>
                 {% else %}
-                    <a class="nav-link" href="#" onclick="showModal('login-modal'); return false;"><i class="fas fa-sign-in-alt"></i> دخول</a>
-                    <a class="nav-link" href="#" onclick="showModal('register-modal'); return false;"><i class="fas fa-user-plus"></i> تسجيل</a>
+                <a class="nav-link" href="#" onclick="showModal('login-modal'); return false;"><i
+                        class="fas fa-sign-in-alt"></i> دخول</a>
+                <a class="nav-link" href="#" onclick="showModal('register-modal'); return false;"><i
+                        class="fas fa-user-plus"></i> تسجيل</a>
                 {% endif %}
             </nav>
         </div>
@@ -62,7 +97,8 @@
         <div class="news-ticker">
             <div class="ticker-content" id="newsTickerContent">
                 {% for n in news %}
-                    <span class="ticker-item"><i class="fas fa-star" style="color: var(--accent); margin-left: 10px;"></i> {{ n }}</span>
+                <span class="ticker-item"><i class="fas fa-star" style="color: var(--accent); margin-left: 10px;"></i>
+                    {{ n }}</span>
                 {% endfor %}
             </div>
         </div>
@@ -80,9 +116,10 @@
             <div class="footer-section">
                 <h3>بصمة قنا</h3>
                 <p>منصة جامعية لدعم المبتكرين والمبدعين من أبناء محافظة قنا.</p>
-                <p style="margin-top: 1rem;"><i class="fas fa-check-circle" style="color: var(--accent);"></i> تحت رعاية محافظ قنا</p>
+                <p style="margin-top: 1rem;"><i class="fas fa-check-circle" style="color: var(--accent);"></i> تحت رعاية
+                    محافظ قنا</p>
             </div>
-            
+
             <div class="footer-section">
                 <h3>روابط سريعة</h3>
                 <ul class="footer-links">
@@ -94,7 +131,7 @@
                     <li><a href="{% url 'about' %}">عن بصمة</a></li>
                 </ul>
             </div>
-            
+
             <div class="footer-section">
                 <h3>تواصل معنا</h3>
                 <p><i class="fas fa-map-marker-alt"></i> جامعة جنوب الوادي - قنا</p>
@@ -107,7 +144,7 @@
     </footer>
 
     <!-- MODALS -->
-    
+
     <!-- Login Modal -->
     <div class="modal" id="login-modal">
         <div class="modal-content">
@@ -116,12 +153,17 @@
             <form method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
                 <div class="form-group">
-                    <input type="email" name="email" placeholder="البريد الإلكتروني" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                    <input type="email" name="email" placeholder="البريد الإلكتروني"
+                        style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;"
+                        required>
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" placeholder="كلمة المرور" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                    <input type="password" name="password" placeholder="كلمة المرور"
+                        style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;"
+                        required>
                 </div>
-                <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">دخول</button>
+                <button type="submit"
+                    style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">دخول</button>
             </form>
         </div>
     </div>
@@ -151,25 +193,32 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('register-form-modal')">&times;</span>
             <h2 style="color: var(--primary-dark); margin-bottom: 2rem;" id="register-form-title">تسجيل مبتكر</h2>
-            
+
             <form method="POST" action="{% url 'register' %}">
                 {% csrf_token %}
                 <input type="hidden" id="register-user-type" name="type" value="innovator">
-                
+
                 <div class="form-group">
-                    <input type="text" name="name" placeholder="الاسم الكامل" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                    <input type="text" name="name" placeholder="الاسم الكامل"
+                        style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;"
+                        required>
                 </div>
                 <div class="form-group">
-                    <input type="email" name="email" placeholder="البريد الإلكتروني" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                    <input type="email" name="email" placeholder="البريد الإلكتروني"
+                        style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;"
+                        required>
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" placeholder="كلمة المرور" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                    <input type="password" name="password" placeholder="كلمة المرور"
+                        style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;"
+                        required>
                 </div>
-                
+
                 <!-- Innovator Specific Fields -->
                 <div id="innovator-fields">
                     <div class="form-group">
-                        <select name="innovator_type" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                        <select name="innovator_type"
+                            style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
                             <option value="">نوع المبتكر</option>
                             <option value="طالب">طالب</option>
                             <option value="باحث">باحث</option>
@@ -178,17 +227,20 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="field" placeholder="مجال التخصص / الكلية" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                        <input type="text" name="field" placeholder="مجال التخصص / الكلية"
+                            style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
                     </div>
                 </div>
-                
+
                 <!-- Investor Specific Fields -->
                 <div id="investor-fields" style="display:none;">
                     <div class="form-group">
-                        <input type="text" name="company" placeholder="اسم المؤسسة / الشركة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                        <input type="text" name="company" placeholder="اسم المؤسسة / الشركة"
+                            style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
                     </div>
                     <div class="form-group">
-                        <select name="investor_type" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                        <select name="investor_type"
+                            style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
                             <option value="">نوع المستثمر</option>
                             <option value="مستثمر فردي">مستثمر فردي</option>
                             <option value="شركة">شركة</option>
@@ -197,11 +249,13 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="investment_field" placeholder="مجالات الاستثمار المستهدفة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                        <input type="text" name="investment_field" placeholder="مجالات الاستثمار المستهدفة"
+                            style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
                     </div>
                 </div>
-                
-                <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">تسجيل</button>
+
+                <button type="submit"
+                    style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">تسجيل</button>
             </form>
         </div>
     </div>
@@ -210,7 +264,8 @@
     <div class="modal" id="chat-list-modal">
         <div class="modal-content" style="max-width: 600px;">
             <span class="close-modal" onclick="closeModal('chat-list-modal')">&times;</span>
-            <h2 style="color: var(--primary-dark); margin-bottom: 2rem;"><i class="fas fa-comments"></i> الرسائل والمحادثات</h2>
+            <h2 style="color: var(--primary-dark); margin-bottom: 2rem;"><i class="fas fa-comments"></i> الرسائل
+                والمحادثات</h2>
             <div id="chat-rooms-container" style="max-height: 400px; overflow-y: auto;">
                 <p style="text-align: center; color: #64748B;">جاري تحميل المحادثات...</p>
             </div>
@@ -222,24 +277,29 @@
         <div class="modal-content" style="max-width: 600px;">
             <span class="close-modal" onclick="closeChatActiveModal()">&times;</span>
             <h2 style="color: var(--primary-dark); margin-bottom: 1rem;" id="active-chat-title">المحادثة</h2>
-            
+
             <div class="chat-messages-container" id="chat-messages-box">
                 <!-- Messages load dynamically -->
             </div>
-            
+
             <form id="chat-send-form" onsubmit="handleSendChat(event)">
                 <div class="chat-input-container">
-                    <input type="text" id="chat-message-input" class="chat-input" placeholder="اكتب رسالتك هنا..." required>
-                    <input type="file" id="chat-file-input" style="display: none;" onchange="handleChatFileSelect(event)">
-                    
-                    <button type="button" class="chat-attachment-btn" onclick="document.getElementById('chat-file-input').click()">
+                    <input type="text" id="chat-message-input" class="chat-input" placeholder="اكتب رسالتك هنا..."
+                        required>
+                    <input type="file" id="chat-file-input" style="display: none;"
+                        onchange="handleChatFileSelect(event)">
+
+                    <button type="button" class="chat-attachment-btn"
+                        onclick="document.getElementById('chat-file-input').click()">
                         <i class="fas fa-paperclip"></i>
                     </button>
                     <button type="submit" class="chat-send-btn">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
-                <div id="chat-file-preview" style="display: none; padding: 5px 10px; background: #e2e8f0; border-radius: 5px; margin-top: 5px; font-size: 0.85rem;"></div>
+                <div id="chat-file-preview"
+                    style="display: none; padding: 5px 10px; background: #e2e8f0; border-radius: 5px; margin-top: 5px; font-size: 0.85rem;">
+                </div>
             </form>
         </div>
     </div>
@@ -257,22 +317,31 @@
             <i class="fas fa-star"></i>
             <span>صناع الأثر</span>
         </a>
-        <a href="{% url 'projects' %}?type=project" class="{% if request.resolver_match.url_name == 'projects' and request.GET.type == 'project' or request.resolver_match.url_name == 'project_detail' or request.resolver_match.url_name == 'projects' and not request.GET.type %}active{% endif %}">
+        <!-- <a href="{% url 'projects' %}?type=project" class="{% if request.resolver_match.url_name == 'projects' and request.GET.type == 'project' or request.resolver_match.url_name == 'project_detail' or request.resolver_match.url_name == 'projects' and not request.GET.type %}active{% endif %}">
             <i class="fas fa-lightbulb"></i>
             <span>المشاريع</span>
         </a>
+
+        <a href="{% url 'projects' %}?type=service" class="{% if request.resolver_match.url_name == 'projects' and request.GET.type == 'service' or request.resolver_match.url_name == 'service_detail' or request.resolver_match.url_name == 'projects' and not request.GET.type %}active{% endif %}">
+            <i class="fas fa-tools"></i>
+            <span>الخدمات</span>
+        </a>
+        
         <a href="{% url 'projects' %}?type=initiative" class="{% if request.resolver_match.url_name == 'projects' and request.GET.type == 'initiative' or request.resolver_match.url_name == 'initiative_detail' %}active{% endif %}">
             <i class="fas fa-rocket"></i>
             <span>المبادرات</span>
         </a>
+        
         <a href="{% url 'podcast_list' %}" class="{% if request.resolver_match.url_name == 'podcast_list' %}active{% endif %}">
             <i class="fas fa-microphone"></i>
             <span>البودكاست</span>
         </a>
+        
         <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">
             <i class="fas fa-info-circle"></i>
             <span>عن بصمة</span>
-        </a>
+        </a> -->
+
     </div>
 
     <!-- Floating Buttons -->
@@ -302,7 +371,7 @@
             const titleEl = document.getElementById('register-form-title');
             const innovatorEl = document.getElementById('innovator-fields');
             const investorEl = document.getElementById('investor-fields');
-            
+
             if (type === 'innovator') {
                 titleEl.textContent = 'تسجيل مبتكر جديد';
                 innovatorEl.style.display = 'block';
@@ -319,6 +388,24 @@
         function toggleMenu() {
             document.getElementById('navMenu').classList.toggle('active');
         }
+
+        // Dropdown toggle logic
+        function toggleDropdown(el, event) {
+            event.stopPropagation();
+            el.classList.toggle('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => {
+                if (d !== el) {
+                    d.classList.remove('open');
+                }
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.nav-dropdown').forEach(d => {
+                d.classList.remove('open');
+            });
+        });
 
         // Dark Mode Logic
         function toggleDarkMode() {
@@ -407,10 +494,10 @@
             closeModal('chat-list-modal');
             activeChatId = chatId;
             showModal('chat-active-modal');
-            
+
             // Clean dynamic history
             document.getElementById('chat-messages-box').innerHTML = '<p style="text-align: center; color: #64748B;">جاري تحميل الرسائل...</p>';
-            
+
             loadChatMessages();
             // Poll for new messages every 3 seconds
             chatInterval = setInterval(loadChatMessages, 3000);
@@ -427,25 +514,25 @@
 
         function loadChatMessages() {
             if (!activeChatId) return;
-            
+
             const messagesBox = document.getElementById('chat-messages-box');
             fetch(`/chat/window/${activeChatId}/`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === 'success') {
                         document.getElementById('active-chat-title').textContent = data.other_name;
-                        
+
                         if (data.messages.length === 0) {
                             messagesBox.innerHTML = '<p style="text-align: center; color: #64748B; padding: 2rem;">أرسل رسالة لبدء المحادثة.</p>';
                             return;
                         }
-                        
+
                         const oldScrollHeight = messagesBox.scrollHeight;
                         const isAtBottom = messagesBox.scrollTop + messagesBox.clientHeight >= messagesBox.scrollHeight - 20;
-                        
+
                         messagesBox.innerHTML = data.messages.map(msg => {
                             const isSent = msg.senderId === data.current_user_id;
-                            
+
                             let attachmentsHtml = '';
                             if (msg.attachments && msg.attachments.length > 0) {
                                 msg.attachments.forEach(att => {
@@ -456,19 +543,19 @@
                                     }
                                 });
                             }
-                            
+
                             return `
                                 <div class="chat-message ${isSent ? 'sent' : 'received'}">
                                     <div class="chat-message-content">
                                         <div style="font-weight: bold; font-size: 0.8rem; margin-bottom: 2px;">${msg.senderName}</div>
                                         <div>${msg.text}</div>
                                         ${attachmentsHtml}
-                                        <div class="chat-message-time">${new Date(msg.timestamp).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</div>
+                                        <div class="chat-message-time">${new Date(msg.timestamp).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}</div>
                                     </div>
                                 </div>
                             `;
                         }).join('');
-                        
+
                         // Scroll to bottom if it was already at the bottom or if it's the first load
                         if (isAtBottom || oldScrollHeight === 0) {
                             messagesBox.scrollTop = messagesBox.scrollHeight;
@@ -490,30 +577,30 @@
         function handleSendChat(event) {
             event.preventDefault();
             if (!activeChatId) return;
-            
+
             const input = document.getElementById('chat-message-input');
             const text = input.value.strip ? input.value.strip() : input.value.trim();
-            
+
             if (!text && !selectedChatFile) return;
-            
+
             const formData = new FormData();
             formData.append('text', text);
-            
+
             if (selectedChatFile) {
                 formData.append('attachment', selectedChatFile);
                 let type = 'file';
                 if (selectedChatFile.type.startsWith('image/')) type = 'image';
                 else if (selectedChatFile.type.startsWith('video/')) type = 'video';
                 else if (selectedChatFile.type.startsWith('audio/')) type = 'audio';
-                
+
                 formData.append('attachment_type', type);
                 formData.append('attachment_name', selectedChatFile.name);
             }
-            
+
             input.value = '';
             selectedChatFile = null;
             document.getElementById('chat-file-preview').style.display = 'none';
-            
+
             fetch(`/chat/send/${activeChatId}/`, {
                 method: 'POST',
                 body: formData,
@@ -521,14 +608,14 @@
                     'X-CSRFToken': '{{ csrf_token }}'
                 }
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    loadChatMessages();
-                } else {
-                    showToast(data.message, 'error');
-                }
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        loadChatMessages();
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                });
         }
 
         // Express Interest API Helper
@@ -536,7 +623,7 @@
             const formData = new FormData();
             formData.append('type', type);
             formData.append('id', id);
-            
+
             fetch("{% url 'express_interest' %}", {
                 method: 'POST',
                 body: formData,
@@ -544,36 +631,36 @@
                     'X-CSRFToken': '{{ csrf_token }}'
                 }
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showToast(data.message, 'success');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
-                } else {
-                    showToast(data.message, 'error');
-                }
-            })
-            .catch(() => {
-                showToast('حدث خطأ أثناء إرسال الاهتمام.', 'error');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showToast(data.message, 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                })
+                .catch(() => {
+                    showToast('حدث خطأ أثناء إرسال الاهتمام.', 'error');
+                });
         }
 
         // Open chat window from item view details
         function initiateChat(itemType, itemId, otherUserId = '') {
             {% if not user.is_authenticated %}
-                showModal('login-modal');
-                return;
+            showModal('login-modal');
+            return;
             {% endif %}
-            
+
             const formData = new FormData();
             formData.append('itemType', itemType);
             formData.append('itemId', itemId);
             if (otherUserId) {
                 formData.append('otherUserId', otherUserId);
             }
-            
+
             fetch("{% url 'open_chat' %}", {
                 method: 'POST',
                 body: formData,
@@ -581,28 +668,29 @@
                     'X-CSRFToken': '{{ csrf_token }}'
                 }
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    openActiveChatRoom(data.chat_id);
-                } else {
-                    showToast(data.message, 'error');
-                }
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        openActiveChatRoom(data.chat_id);
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                });
         }
     </script>
-    
+
     <!-- Show active notifications / messages if any -->
     {% if messages %}
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                {% for message in messages %}
-                    showToast("{{ message }}", "{{ message.tags }}");
-                {% endfor %}
-            });
-        </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            {% for message in messages %}
+            showToast("{{ message }}", "{{ message.tags }}");
+            {% endfor %}
+        });
+    </script>
     {% endif %}
 
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

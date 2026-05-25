@@ -101,9 +101,6 @@
             {% for maker in stories %}
                 <div class="card" onclick="location.href='{% url 'story_detail' maker.pk %}'">
                     <div class="card-img" style="background-image: url('{{ maker.image|default:'https://via.placeholder.com/400x300/3b82f6/ffffff?text=Story+Maker' }}')">
-                        <div class="play-icon">
-                            <i class="fas fa-play"></i>
-                        </div>
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">{{ maker.name }}</h3>
@@ -126,9 +123,7 @@
             {% for project in projects %}
                 <div class="card" onclick="location.href='{% url 'project_detail' project.pk %}'">
                     <div class="card-img" style="background-image: url('{{ project|card_image }}')">
-                        <div class="play-icon">
-                            <i class="fas fa-play"></i>
-                        </div>
+
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">{{ project.title }}</h3>
@@ -151,9 +146,6 @@
             {% for initiative in initiatives %}
                 <div class="card" onclick="location.href='{% url 'initiative_detail' initiative.pk %}'">
                     <div class="card-img" style="background-image: url('{{ initiative|card_image }}')">
-                        <div class="play-icon">
-                            <i class="fas fa-play"></i>
-                        </div>
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">{{ initiative.title }}</h3>
@@ -162,6 +154,28 @@
                 </div>
             {% empty %}
                 <p style="grid-column: 1/-1; text-align: center; color: #64748B;">لا توجد مبادرات حالياً.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- الخدمات -->
+    <section style="margin-top: 4rem;">
+        <div class="section-title">
+            <h2>الخدمات</h2>
+        </div>
+        
+        <div class="cards-grid">
+            {% for service in services %}
+                <div class="card" onclick="location.href='{% url 'service_detail' service.pk %}'">
+                    <div class="card-img" style="background-image: url('{{ service|card_image }}')">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">{{ service.title }}</h3>
+                        <div class="card-subtitle">{{ service.innovator_name }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="grid-column: 1/-1; text-align: center; color: #64748B;">لا توجد خدمات حالياً.</p>
             {% endfor %}
         </div>
     </section>

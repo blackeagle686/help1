@@ -8,6 +8,8 @@ urlpatterns = [
     path('projects/', views.projects_list, name='projects'),
     path('about/', views.about, name='about'),
     path('nominate/', views.nominate, name='nominate'),
+    path('services/', views.service_list, name='services'),
+    path('investors/', views.investor_list, name='investors'),
     
     # Auth
     path('login/', views.login_view, name='login'),
@@ -21,6 +23,8 @@ urlpatterns = [
     path('story/<int:pk>/', views.story_detail, name='story_detail'),
     path('project/<int:pk>/', views.project_detail, name='project_detail'),
     path('initiative/<int:pk>/', views.initiative_detail, name='initiative_detail'),
+    path('service/<int:pk>/', views.service_detail, name='service_detail'),
+    path('investor/<int:pk>/', views.investor_detail, name='investor_detail'),
     
     # File Manager
     path('file/upload/', views.upload_file, name='upload_file'),
@@ -67,4 +71,15 @@ urlpatterns = [
     
     # Innovator Actions
     path('innovator/add-project/', views.innovator_add_project, name='innovator_add_project'),
+
+    path('admin/add-service/', views.admin_add_service, name='admin_add_service'),
+    path('admin/services/<int:pk>/edit/', views.admin_edit_service, name='admin_edit_service'),
+    path('admin/services/<int:pk>/delete/', views.admin_delete_service, name='admin_delete_service'),
+    path('admin/add-investor/', views.admin_add_investor, name='admin_add_investor'),
+    path('admin/investors/<int:pk>/edit/', views.admin_edit_investor, name='admin_edit_investor'),
+    path('admin/investors/<int:pk>/delete/', views.admin_delete_investor, name='admin_delete_investor'),
+    
+
+
+
 ]

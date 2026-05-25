@@ -1,0 +1,48 @@
+{% extends 'portal/base.html' %}
+{% load portal_extras %}
+
+{% block title %}{{ service.title }} - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <button class="back-btn" onclick="location.href='{% url 'services' %}'">
+        <i class="fas fa-arrow-right"></i> عودة
+    </button>
+    
+    <h1 class="detail-title">{{ service.title }}</h1>
+    {% if service.video %}
+        <div class="detail-video">
+            <iframe src="{{ service.video|embed_video }}" allowfullscreen></iframe>
+        </div>
+    {% else %}
+        <div class="detail-video">
+            <img src="{{ service.image }}" alt="{{ service.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+    {% endif %}
+    
+    <div class="detail-meta">
+        <span><i class="fas fa-user"></i> الإدارة</span>
+        <span><i class="fas fa-calendar"></i> {{ service.date|date:"Y-m-d" }}</span>
+        <span><i class="fas fa-eye"></i> {{ service.views }} مشاهدة</span>
+    </div>
+    
+    <div class="detail-content">
+        {% if service.description %}
+            <h3 style="margin-top: 2rem;">وصف الخدمة</h3>
+            <p>{{ service.description|linebreaks }}</p>
+        {% endif %}
+    </div>
+    
+    {% if user.is_authenticated %}
+        {% if user.profile.user_type == 'investor' %}
+            <button class="support-btn" style="background: var(--primary); margin-bottom: 10px;" onclick="expressInterest('service', '{{ service.pk }}')">
+                <i class="fas fa-hand-holding-heart"></i> أنا مهتم بدعم هذه الخدمة
+            </button>
+        {% endif %}
+        
+        <button class="support-btn" onclick="initiateChat('service', '{{ service.pk }}', '')">
+            <i class="fas fa-comments"></i> تواصل مع الإدارة بخصوص هذه الخدمة
+        </button>
+    {% endif %}
+</div>
+{% endblock %}

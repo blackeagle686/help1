@@ -1,0 +1,36 @@
+{% extends 'portal/base.html' %}
+{% load portal_extras %}
+
+{% block title %}شركاء الاستثمار - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section-title">
+        <h2>شركاء الاستثمار</h2>
+        <p style="color: #64748B; margin-top: 1rem;">تعرف على المستثمرين والشركاء الداعمين لشباب ومبتكري قنا</p>
+    </div>
+    
+    <!-- Investors Section -->
+    {% if investors %}
+        <div class="cards-grid" style="margin-top: 2rem; margin-bottom: 4rem;">
+            {% for investor in investors %}
+                <div class="card" onclick="location.href='{% url 'investor_detail' investor.pk %}'">
+                    <div class="card-img" style="background-image: url('{{ investor|card_image }}')">
+
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">{{ investor.title }}</h3>
+                        <div class="card-subtitle">شريك استثماري</div>
+                        <div class="card-meta">
+                            <span><i class="fas fa-eye"></i> {{ investor.views }} مشاهدة</span>
+                            <span><i class="fas fa-heart"></i> {{ investor.interested }} مهتم</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="text-align: center; color: #64748B; padding: 3rem;">لا يوجد شركاء استثمار حالياً.</p>
+    {% endif %}
+</div>
+{% endblock %}
