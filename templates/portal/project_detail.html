@@ -17,21 +17,27 @@
         background-image: url('{{ project|card_image }}');
         background-size: cover;
         background-position: center;
-        
     {% else %}
         background: linear-gradient(135deg, var(--primary), var(--accent));
     {% endif %}
 ">
-    <div class="detail-video-bg" style="padding: 2.5rem; display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
-        <iframe src="{{ project.video|embed_video }}" allowfullscreen style="border: none; border-radius: 16px; box-shadow: var(--shadow); width: 100%; height: 100%;"></iframe>
+    <div class="detail-video-bg" style="display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
+        <iframe src="{{ project.video|embed_video }}" allowfullscreen style="border: none; width: 100%; height: 100%;"></iframe>
     </div>
 </div>
-<div class="detail-page">
-{% elif project.image %}
-<div class="detail-page">
 {% else %}
-<div class="detail-page">
+<div class="detail-video-hero" style="
+    {% if project.image %}
+        background-image: url('{{ project|card_image }}');
+        background-size: cover;
+        background-position: center;
+    {% else %}
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+    {% endif %}
+">
+</div>
 {% endif %}
+<div class="detail-page">
     
     <div class="detail-meta">
         <span><i class="fas fa-user"></i> {{ project.innovator_name }}</span>

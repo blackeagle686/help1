@@ -17,14 +17,24 @@
         background-image: url('{{ podcast|card_image }}');
         background-size: cover;
         background-position: center;
-        
     {% else %}
         background: linear-gradient(135deg, var(--primary), var(--accent));
     {% endif %}
 ">
-    <div class="detail-video-bg" style="padding: 2.5rem; display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
-        <iframe src="{{ podcast.video|embed_video }}" allowfullscreen style="border: none; border-radius: 16px; box-shadow: var(--shadow); width: 100%; height: 100%;"></iframe>
+    <div class="detail-video-bg" style="display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
+        <iframe src="{{ podcast.video|embed_video }}" allowfullscreen style="border: none; width: 100%; height: 100%;"></iframe>
     </div>
+</div>
+{% else %}
+<div class="detail-video-hero" style="
+    {% if podcast.image %}
+        background-image: url('{{ podcast|card_image }}');
+        background-size: cover;
+        background-position: center;
+    {% else %}
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+    {% endif %}
+">
 </div>
 {% endif %}
 <div class="detail-page" style="direction: rtl; text-align: right; padding-top: 2rem; padding-bottom: 4rem;">
