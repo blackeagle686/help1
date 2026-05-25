@@ -4,21 +4,32 @@
 {% block title %}{{ maker.name }} - بصمة قنا{% endblock %}
 
 {% block content %}
+{% if maker.video %}
 <div class="detail-page">
     <button class="back-btn" onclick="location.href='{% url 'story' %}'">
         <i class="fas fa-arrow-right"></i> عودة
     </button>
-    
     <h1 class="detail-title">{{ maker.name }}</h1>
-    {% if maker.video %}
-        <div class="detail-video">
-            <iframe src="{{ maker.video|embed_video }}" allowfullscreen></iframe>
-        </div>
-    {% elif maker.image %}
-        <div class="detail-image">
-            <img src="{{ maker.image }}" alt="{{ maker.name }}">
-        </div>
-    {% endif %}
+    <div class="detail-video">
+        <iframe src="{{ maker.video|embed_video }}" allowfullscreen></iframe>
+    </div>
+{% elif maker.image %}
+<div class="detail-hero" style="background-image: url('{{ maker.image }}');">
+    <div class="detail-hero-content">
+        <button class="hero-back-btn" onclick="location.href='{% url 'story' %}'">
+            <i class="fas fa-arrow-right"></i> عودة
+        </button>
+        <h1 class="hero-title">{{ maker.name }}</h1>
+    </div>
+</div>
+<div class="detail-page">
+{% else %}
+<div class="detail-page">
+    <button class="back-btn" onclick="location.href='{% url 'story' %}'">
+        <i class="fas fa-arrow-right"></i> عودة
+    </button>
+    <h1 class="detail-title">{{ maker.name }}</h1>
+{% endif %}
     
     <div class="detail-meta">
         <span><i class="fas fa-briefcase"></i> {{ maker.title }}</span>

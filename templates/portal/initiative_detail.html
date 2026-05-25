@@ -4,21 +4,32 @@
 {% block title %}{{ initiative.title }} - بصمة قنا{% endblock %}
 
 {% block content %}
+{% if initiative.video %}
 <div class="detail-page">
     <button class="back-btn" onclick="location.href='{% url 'projects' %}?type=initiative'">
         <i class="fas fa-arrow-right"></i> عودة
     </button>
-    
     <h1 class="detail-title">{{ initiative.title }}</h1>
-    {% if initiative.video %}
-        <div class="detail-video">
-            <iframe src="{{ initiative.video|embed_video }}" allowfullscreen></iframe>
-        </div>
-    {% elif initiative.image %}
-        <div class="detail-image">
-            <img src="{{ initiative.image }}" alt="{{ initiative.title }}">
-        </div>
-    {% endif %}
+    <div class="detail-video">
+        <iframe src="{{ initiative.video|embed_video }}" allowfullscreen></iframe>
+    </div>
+{% elif initiative.image %}
+<div class="detail-hero" style="background-image: url('{{ initiative|card_image }}');">
+    <div class="detail-hero-content">
+        <button class="hero-back-btn" onclick="location.href='{% url 'projects' %}?type=initiative'">
+            <i class="fas fa-arrow-right"></i> عودة
+        </button>
+        <h1 class="hero-title">{{ initiative.title }}</h1>
+    </div>
+</div>
+<div class="detail-page">
+{% else %}
+<div class="detail-page">
+    <button class="back-btn" onclick="location.href='{% url 'projects' %}?type=initiative'">
+        <i class="fas fa-arrow-right"></i> عودة
+    </button>
+    <h1 class="detail-title">{{ initiative.title }}</h1>
+{% endif %}
     
     <div class="detail-meta">
         <span><i class="fas fa-user"></i> {{ initiative.founder }}</span>

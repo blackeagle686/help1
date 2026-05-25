@@ -96,8 +96,12 @@
                 </a>
                 <a class="nav-link mobile-only {% if request.resolver_match.url_name == 'nominate' %}active{% endif %}" href="{% url 'nominate' %}">
                     <i class="fas fa-user-plus"></i> رشح نموذج
+                </a> 
+                <a class="nav-link mobile-only {% if request.resolver_match.url_name == 'services' or request.resolver_match.url_name == 'service_detail' %}active{% endif %}" href="{% url 'services' %}">
+                    <i class="fas fa-tools"></i> الخدمات
                 </a>
                 
+
                 <hr class="mobile-only" style="border: 0; border-top: 1px solid var(--border-color); margin: 0.5rem 0; width: 100%;">
 
                 {% if user.is_authenticated %}
@@ -355,10 +359,6 @@
             <i class="fas fa-rocket"></i>
             <span>المبادرات</span>
         </a>
-        <a href="{% url 'services' %}" class="{% if request.resolver_match.url_name == 'services' or request.resolver_match.url_name == 'service_detail' %}active{% endif %}">
-            <i class="fas fa-tools"></i>
-            <span>الخدمات</span>
-        </a>
         <a href="{% url 'investors' %}" class="{% if request.resolver_match.url_name == 'investors' or request.resolver_match.url_name == 'investor_detail' %}active{% endif %}">
             <i class="fas fa-handshake"></i>
             <span>المستثمرين</span>
@@ -366,14 +366,6 @@
         <a href="{% url 'podcast_list' %}" class="{% if request.resolver_match.url_name == 'podcast_list' or request.resolver_match.url_name == 'podcast_detail' %}active{% endif %}">
             <i class="fas fa-microphone"></i>
             <span>البودكاست</span>
-        </a>
-        <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">
-            <i class="fas fa-info-circle"></i>
-            <span>عن بصمة</span>
-        </a>
-        <a href="{% url 'nominate' %}" class="{% if request.resolver_match.url_name == 'nominate' %}active{% endif %}">
-            <i class="fas fa-user-plus"></i>
-            <span>ترشيح</span>
         </a>
     </div>
 

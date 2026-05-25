@@ -4,21 +4,26 @@
 {% block title %}{{ investor.title }} - بصمة قنا{% endblock %}
 
 {% block content %}
+{% if investor.video %}
 <div class="detail-page">
     <button class="back-btn" onclick="location.href='{% url 'investors' %}'">
         <i class="fas fa-arrow-right"></i> عودة
     </button>
-    
     <h1 class="detail-title">{{ investor.title }}</h1>
-    {% if investor.video %}
-        <div class="detail-video">
-            <iframe src="{{ investor.video|embed_video }}" allowfullscreen></iframe>
-        </div>
-    {% else %}
-        <div class="detail-image">
-            <img src="{{ investor.image }}" alt="{{ investor.title }}">
-        </div>
-    {% endif %}
+    <div class="detail-video">
+        <iframe src="{{ investor.video|embed_video }}" allowfullscreen></iframe>
+    </div>
+{% else %}
+<div class="detail-hero" style="background-image: url('{{ investor|card_image }}');">
+    <div class="detail-hero-content">
+        <button class="hero-back-btn" onclick="location.href='{% url 'investors' %}'">
+            <i class="fas fa-arrow-right"></i> عودة
+        </button>
+        <h1 class="hero-title">{{ investor.title }}</h1>
+    </div>
+</div>
+<div class="detail-page">
+{% endif %}
     
     <div class="detail-meta">
         <span><i class="fas fa-user"></i> شريك استثماري</span>

@@ -69,7 +69,7 @@ def embed_audio(url):
 @register.filter(name='card_image')
 def card_image(item):
     if not item:
-        return 'https://via.placeholder.com/400x300/3b82f6/ffffff?text=Project'
+        return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop'
     
     # 1. Check cover_image
     cover_image = getattr(item, 'cover_image', None)
@@ -102,7 +102,12 @@ def card_image(item):
             if video_id:
                 return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
                 
-    # 5. Default Placeholder
-    if item.__class__.__name__ == 'Podcast':
+    # 5. Default Placeholders based on content type
+    class_name = item.__class__.__name__
+    if class_name == 'Podcast':
         return 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&auto=format&fit=crop'
-    return 'https://via.placeholder.com/400x300/3b82f6/ffffff?text=Project'
+    elif class_name == 'Investor':
+        return 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop'
+    elif class_name == 'Service':
+        return 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop'
+    return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop'
