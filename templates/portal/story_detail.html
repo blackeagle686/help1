@@ -4,35 +4,33 @@
 {% block title %}{{ maker.name }} - بصمة قنا{% endblock %}
 
 {% block content %}
+<div class="detail-header-block" style="max-width: 1200px; margin: 0 auto; padding: 2rem 2rem 1rem; direction: rtl; text-align: right;">
+    <button class="back-btn" onclick="location.href='{% url 'story' %}'">
+        <i class="fas fa-arrow-right"></i> عودة
+    </button>
+    <h1 class="detail-title" style="margin-top: 1rem; font-weight: 800; font-size: 2.8rem; color: var(--primary-dark);">{{ maker.name }}</h1>
+</div>
+
 {% if maker.video %}
-<div class="detail-video-hero">
-    <div class="detail-video-bg">
-        <iframe src="{{ maker.video|embed_video }}" allowfullscreen></iframe>
-    </div>
-    <div class="detail-hero-content">
-        <button class="hero-back-btn" onclick="location.href='{% url 'story' %}'">
-            <i class="fas fa-arrow-right"></i> عودة
-        </button>
-        <h1 class="hero-title">{{ maker.name }}</h1>
+<div class="detail-video-hero" style="
+    {% if maker.image %}
+        background-image: url('{{ maker|card_image }}');
+        background-size: cover;
+        background-position: center;
+        
+    {% else %}
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+    {% endif %}
+">
+    <div class="detail-video-bg" style="padding: 2.5rem; display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
+        <iframe src="{{ maker.video|embed_video }}" allowfullscreen style="border: none; border-radius: 16px; box-shadow: var(--shadow); width: 100%; height: 100%;"></iframe>
     </div>
 </div>
 <div class="detail-page">
 {% elif maker.image %}
-<div class="detail-hero" style="background-image: url('{{ maker.image }}');">
-    <div class="detail-hero-content">
-        <button class="hero-back-btn" onclick="location.href='{% url 'story' %}'">
-            <i class="fas fa-arrow-right"></i> عودة
-        </button>
-        <h1 class="hero-title">{{ maker.name }}</h1>
-    </div>
-</div>
 <div class="detail-page">
 {% else %}
 <div class="detail-page">
-    <button class="back-btn" onclick="location.href='{% url 'story' %}'">
-        <i class="fas fa-arrow-right"></i> عودة
-    </button>
-    <h1 class="detail-title">{{ maker.name }}</h1>
 {% endif %}
     
     <div class="detail-meta">
