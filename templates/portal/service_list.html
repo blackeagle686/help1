@@ -15,9 +15,7 @@
         <div class="cards-grid" style="margin-top: 2rem; margin-bottom: 4rem;">
             {% for service in services %}
                 <div class="card" onclick="location.href='{% url 'service_detail' service.pk %}'">
-                    <div class="card-img" style="background-image: url('{{ service|card_image }}')">
-
-                    </div>
+                    <img class="card-img" src="{{ service|card_image }}" alt="{{ service.title }}">
                     <div class="card-content">
                         <h3 class="card-title">{{ service.title }}</h3>
                         <div class="card-subtitle">الجهة: الإدارة</div>

@@ -25,6 +25,7 @@ urlpatterns = [
     path('initiative/<int:pk>/', views.initiative_detail, name='initiative_detail'),
     path('service/<int:pk>/', views.service_detail, name='service_detail'),
     path('investor/<int:pk>/', views.investor_detail, name='investor_detail'),
+    path('podcast/<int:pk>/', views.podcast_detail, name='podcast_detail'),
     
     # File Manager
     path('file/upload/', views.upload_file, name='upload_file'),

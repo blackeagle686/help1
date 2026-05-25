@@ -15,9 +15,7 @@
         <div class="cards-grid" style="margin-top: 2rem; margin-bottom: 4rem;">
             {% for investor in investors %}
                 <div class="card" onclick="location.href='{% url 'investor_detail' investor.pk %}'">
-                    <div class="card-img" style="background-image: url('{{ investor|card_image }}')">
-
-                    </div>
+                    <img class="card-img" src="{{ investor|card_image }}" alt="{{ investor.title }}">
                     <div class="card-content">
                         <h3 class="card-title">{{ investor.title }}</h3>
                         <div class="card-subtitle">شريك استثماري</div>

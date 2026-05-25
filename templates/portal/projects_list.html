@@ -12,10 +12,10 @@
     
     <!-- Filter Bar -->
     <div style="margin-bottom: 3rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; align-items: center;">
-        <div style="display: flex; gap: 0.5rem; background: white; padding: 5px; border-radius: 30px; box-shadow: var(--shadow);">
-            <a href="?type=all" class="admin-tab {% if selected_type == 'all' %}active{% endif %}" style="text-decoration: none; color: inherit; padding: 0.5rem 1.5rem;">الكل</a>
-            <a href="?type=project" class="admin-tab {% if selected_type == 'project' %}active{% endif %}" style="text-decoration: none; color: inherit; padding: 0.5rem 1.5rem;">المشاريع</a>
-            <a href="?type=initiative" class="admin-tab {% if selected_type == 'initiative' %}active{% endif %}" style="text-decoration: none; color: inherit; padding: 0.5rem 1.5rem;">المبادرات</a>
+        <div class="filter-tabs">
+            <a href="?type=all" class="filter-tab {% if selected_type == 'all' %}active{% endif %}">الكل</a>
+            <a href="?type=project" class="filter-tab {% if selected_type == 'project' %}active{% endif %}">المشاريع</a>
+            <a href="?type=initiative" class="filter-tab {% if selected_type == 'initiative' %}active{% endif %}">المبادرات</a>
         </div>
         
         <form method="GET" style="display: inline-flex; gap: 5px;">
@@ -33,13 +33,11 @@
     
     <!-- Projects Section -->
     {% if projects %}
-        <h3 style="color: var(--primary-dark); margin-bottom: 1.5rem; border-bottom: 2px solid var(--accent); padding-bottom: 5px; display: inline-block;">المشاريع الابتكارية</h3>
+        <h3 style="color: var(--heading-color); margin-bottom: 1.5rem; border-bottom: 2px solid var(--accent); padding-bottom: 5px; display: inline-block;">المشاريع الابتكارية</h3>
         <div class="cards-grid" style="margin-bottom: 4rem;">
             {% for project in projects %}
                 <div class="card" onclick="location.href='{% url 'project_detail' project.pk %}'">
-                    <div class="card-img" style="background-image: url('{{ project|card_image }}')">
-
-                    </div>
+                    <img class="card-img" src="{{ project|card_image }}" alt="{{ project.title }}">
                     <div class="card-content">
                         <h3 class="card-title">{{ project.title }}</h3>
                         <div class="card-subtitle">{{ project.innovator_name }}</div>
@@ -55,13 +53,11 @@
     
     <!-- Initiatives Section -->
     {% if initiatives %}
-        <h3 style="color: var(--primary-dark); margin-bottom: 1.5rem; border-bottom: 2px solid var(--accent); padding-bottom: 5px; display: inline-block;">المبادرات المجتمعية</h3>
+        <h3 style="color: var(--heading-color); margin-bottom: 1.5rem; border-bottom: 2px solid var(--accent); padding-bottom: 5px; display: inline-block;">المبادرات المجتمعية</h3>
         <div class="cards-grid">
             {% for initiative in initiatives %}
                 <div class="card" onclick="location.href='{% url 'initiative_detail' initiative.pk %}'">
-                    <div class="card-img" style="background-image: url('{{ initiative|card_image }}')">
-
-                    </div>
+                    <img class="card-img" src="{{ initiative|card_image }}" alt="{{ initiative.title }}">
                     <div class="card-content">
                         <h3 class="card-title">{{ initiative.title }}</h3>
                         <div class="card-subtitle">{{ initiative.founder }}</div>

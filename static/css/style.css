@@ -17,8 +17,12 @@
 
     --text-dark: #1B2631;
 
+    --card-bg: white;
+    --border-color: #E2E8F0;
 
     --shadow: 0 10px 30px rgba(33, 97, 140, 0.1);
+    
+    --heading-color: var(--primary-dark);
 }
 
 body {
@@ -64,8 +68,8 @@ header {
 
 /* 3. حجم صورة اللوجو */
 .logo-icon {
-    width: 55px !important;
-    height: 55px !important;
+    width: 75px !important;
+    height: 75px !important;
     background: none !important;
     display: flex;
     align-items: center;
@@ -88,12 +92,94 @@ header {
     -webkit-text-fill-color: transparent;
 }
 
-.nav-menu {
+/* ===== TOP BAR (Redesign) ===== */
+.top-bar {
+    background-color: var(--primary-dark);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 0;
+    font-size: 0.85rem;
+    transition: background-color 0.3s;
+}
+
+.top-bar-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
     display: flex;
-    gap: 0.4rem;
+    justify-content: space-between;
     align-items: center;
-    flex-wrap: nowrap;
-    overflow-x: auto;
+}
+
+.top-bar-meta, .top-bar-auth {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.top-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.top-link:hover, .top-link.active {
+    color: var(--accent);
+}
+
+.top-link i {
+    font-size: 0.9rem;
+}
+
+.welcome-msg {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    margin-left: 10px;
+}
+
+.top-link.highlight {
+    background: var(--accent);
+    color: var(--primary-dark);
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.top-link.highlight:hover {
+    background: white;
+    color: var(--primary-dark);
+}
+
+.top-link.logout-btn:hover {
+    color: #ff6b6b;
+}
+
+/* Desktop Main Navbar */
+.nav-menu-desktop {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .nav-menu-desktop {
+        gap: 0.3rem;
+    }
+    .nav-link {
+        padding: 0.4rem 0.6rem !important;
+        font-size: 0.8rem !important;
+        gap: 0.25rem !important;
+    }
+}
+
+/* Mobile side menu hidden on desktop by default */
+.nav-menu {
+    display: none;
 }
 
 .nav-link {
@@ -111,6 +197,7 @@ header {
     justify-content: center;
     gap: 0.4rem;
     white-space: nowrap;
+    flex-shrink: 0; /* Prevents links from squishing on small screens */
 }
 
 .nav-link i, .dropdown-trigger i, .dropdown-item i {
@@ -198,10 +285,11 @@ header {
     display: flex;
     gap: 60px;
     align-items: center;
-    background: white;
+    background-image: linear-gradient(45deg, var(--text-dark), var(--accent-dark));
     border-radius: 30px;
     box-shadow: var(--shadow);
 }
+
 
 .quotes-text {
     flex: 1;
@@ -210,13 +298,13 @@ header {
 
 .quotes-text h2 {
     font-size: 2.5rem;
-    color: var(--primary-dark);
+    color: white;
     font-family: 'Amiri', serif;
     margin-bottom: 1rem;
 }
 
 .quotes-text p {
-    color: #64748B;
+    color: rgba(255, 255, 255, 0.9);
     font-size: 1.1rem;
 }
 
@@ -457,10 +545,10 @@ header {
 }
 
 .card-img {
-    height: 200px;
-    background-size: cover;
-    background-position: center;
-    position: relative;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
 }
 
 /* .play-icon {
@@ -525,6 +613,22 @@ header {
     border: none;
 }
 
+.detail-image {
+    width: 100%;
+    height: 500px;
+    margin-bottom: 2rem;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 .detail-title {
     font-size: 3rem;
     color: var(--primary-dark);
@@ -555,8 +659,10 @@ header {
 
 .gallery-item {
     height: 200px;
-    background-size: cover;
+    background-size: contain;
+    background-repeat: no-repeat;
     background-position: center;
+    background-color: var(--card-bg, #fdfefe);
     border-radius: 10px;
 }
 
@@ -794,6 +900,36 @@ footer {
 .admin-tab.active {
     background: linear-gradient(135deg, var(--primary), var(--accent));
     color: white;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background: white;
+    padding: 5px;
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+    align-items: center;
+}
+
+.filter-tab {
+    text-decoration: none;
+    color: var(--text-dark);
+    padding: 0.5rem 1.5rem;
+    border-radius: 30px;
+    transition: all 0.3s;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.filter-tab:hover {
+    color: var(--accent);
+    background: rgba(249, 115, 22, 0.1);
+}
+
+.filter-tab.active {
+    background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+    color: white !important;
 }
 
 .data-table {
@@ -1091,6 +1227,8 @@ footer {
         flex-direction: column;
         padding: 1rem;
         box-shadow: var(--shadow);
+        flex: none !important;
+        justify-content: flex-start !important;
     }
 
     .nav-menu.active {
@@ -1258,6 +1396,10 @@ footer {
         height: 200px !important;
     }
 
+    .detail-image {
+        height: 250px !important;
+    }
+
     .card-video {
         height: 180px !important;
     }
@@ -1337,9 +1479,16 @@ footer {
         background: white !important;
         box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1) !important;
         padding: 0.5rem 1rem !important;
-        justify-content: space-around !important;
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
         z-index: 1000 !important;
         border-top: 2px solid var(--accent) !important;
+        gap: 1.2rem !important;
+    }
+
+    .bottom-nav::-webkit-scrollbar {
+        display: none !important;
     }
 
     .bottom-nav a {
@@ -1351,6 +1500,7 @@ footer {
         text-decoration: none !important;
         font-size: 0.7rem !important;
         padding: 0.5rem !important;
+        flex-shrink: 0 !important;
     }
 
     .bottom-nav a i {
@@ -1363,6 +1513,48 @@ footer {
 
     body {
         padding-bottom: 70px !important;
+    }
+
+    /* Decrease size of floating buttons on mobile */
+    #darkModeToggle {
+        bottom: 125px !important;
+        right: 15px !important;
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 0.9rem !important;
+    }
+
+    #scrollTopBtn {
+        bottom: 80px !important;
+        right: 15px !important;
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Decrease all cards size and make them fit / responsive on mobile screens */
+    .cards-grid,
+    div[style*="grid-template-columns"] {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+        gap: 1.2rem !important;
+    }
+
+    .card {
+        border-radius: 15px !important;
+    }
+
+    .card-img,
+    .card-video,
+    .podcast-card div[style*="height: 200px"] {
+        height: 160px !important;
+    }
+
+    .card-content {
+        padding: 1.2rem !important;
+    }
+
+    .card-title {
+        font-size: 1.1rem !important;
     }
 }
 
@@ -1381,17 +1573,26 @@ footer {
     }
 
     .logo-icon {
-        width: 35px !important;
-        height: 35px !important;
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    .cards-grid,
+    div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
     }
 }
 
 /* 13. الوضع الليلي (Dark Mode) */
 .dark-mode {
-    --primary-dark: #0a2a1f;
-    --primary: #0d3d2a;
+    --primary-dark: #0a0a0a; /* Black */
+    --primary: #B79F6A;      /* Gold */
     --bg-light: #121212;
     --text-dark: #E2E8F0;
+    --card-bg: #1E1E1E;
+    --border-color: #2D2D2D;
+    --heading-color: var(--accent);
 }
 
 .dark-mode body {
@@ -1619,6 +1820,19 @@ footer {
 .dark-mode .admin-tab.active {
     background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
     color: white !important;
+}
+
+.dark-mode .filter-tabs {
+    background: #1E1E1E !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-mode .filter-tab {
+    color: #E2E8F0 !important;
+}
+
+.dark-mode .filter-tab:hover {
+    background: rgba(214, 186, 125, 0.1) !important;
 }
 
 /* Modals and Forms in Dark Mode */

@@ -252,6 +252,11 @@ def project_detail(request, pk):
     context = {'project': project}
     return render(request, 'portal/project_detail.html', context)
 
+def podcast_detail(request, pk):
+    podcast = get_object_or_404(Podcast, pk=pk)
+    context = {'podcast': podcast}
+    return render(request, 'portal/podcast_detail.html', context)
+
 def initiative_detail(request, pk):
     initiative = get_object_or_404(Initiative, pk=pk)
     initiative.views += 1
@@ -1015,6 +1020,19 @@ def podcast_list(request):
     context = {'podcasts': podcasts}
     return render(request, 'portal/podcast_list.html', context)
 
+def validate_podcast_audio(audio_file):
+    if not audio_file:
+        return True, None
+    import os
+    ext = os.path.splitext(audio_file.name)[1].lower()
+    valid_extensions = ['.mp3', '.wav', '.m4a', '.ogg', '.aac', '.flac']
+    if ext not in valid_extensions:
+        return False, 'يجب أن يكون الملف الصوتي بصيغة mp3 أو wav أو m4a أو ogg أو aac أو flac فقط.'
+    if audio_file.size > 5 * 1024 * 1024:
+        return False, 'يجب أن لا يتجاوز حجم الملف الصوتي 5 ميجابايت.'
+    return True, None
+
+
 @login_required
 @csrf_exempt
 def admin_add_podcast(request):
@@ -1028,6 +1046,12 @@ def admin_add_podcast(request):
         audio_file = request.FILES.get('audio_file')
         
         if title and description:
+            if audio_file:
+                is_valid, err_msg = validate_podcast_audio(audio_file)
+                if not is_valid:
+                    messages.error(request, err_msg)
+                    return redirect('dashboard')
+            
             Podcast.objects.create(
                 title=title,
                 description=description,
@@ -1045,12 +1069,18 @@ def admin_edit_podcast(request, pk):
         return redirect('home')
     podcast = get_object_or_404(Podcast, pk=pk)
     if request.method == 'POST':
+        new_audio_file = request.FILES.get('audio_file')
+        if new_audio_file:
+            is_valid, err_msg = validate_podcast_audio(new_audio_file)
+            if not is_valid:
+                messages.error(request, err_msg)
+                return redirect('dashboard')
+            podcast.audio_file = new_audio_file
+            
         podcast.title = request.POST.get('title')
         podcast.description = request.POST.get('description')
         podcast.video = request.POST.get('video')
         podcast.audio = request.POST.get('audio')
-        if request.FILES.get('audio_file'):
-            podcast.audio_file = request.FILES.get('audio_file')
         podcast.save()
         messages.success(request, 'تم تحديث البودكاست بنجاح.')
     return redirect('dashboard')

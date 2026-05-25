@@ -1,0 +1,60 @@
+{% extends 'portal/base.html' %}
+{% load portal_extras %}
+
+{% block title %}{{ podcast.title }} - بصمة قنا{% endblock %}
+
+{% block content %}
+<div class="detail-page" style="direction: rtl; text-align: right; padding-top: 2rem; padding-bottom: 4rem;">
+    <button class="back-btn" onclick="location.href='{% url 'podcast_list' %}'">
+        <i class="fas fa-arrow-right"></i> عودة إلى الحلقات
+    </button>
+    
+    <h1 class="detail-title" style="margin-bottom: 0.5rem;">{{ podcast.title }}</h1>
+    
+    <div class="detail-meta" style="margin-bottom: 2.5rem; display: flex; gap: 1.5rem; color: #64748B; font-size: 0.95rem;">
+        <span><i class="fas fa-calendar-alt" style="color: var(--accent); margin-left: 5px;"></i> {{ podcast.date|date:"d M Y" }}</span>
+        <span><i class="fas fa-headphones" style="color: var(--accent); margin-left: 5px;"></i> بودكاست بصمة قنا</span>
+    </div>
+
+    {% if podcast.video %}
+        <div class="detail-video" style="box-shadow: var(--shadow); border: 1px solid var(--border-color, #E2E8F0); margin-bottom: 3rem;">
+            <iframe src="{{ podcast.video|embed_video }}" allowfullscreen></iframe>
+        </div>
+    {% endif %}
+    
+    {% if podcast.audio or podcast.audio_file %}
+        <div class="card" style="padding: 2.5rem 2rem; border-radius: 20px; border: 1px solid var(--border-color, #E2E8F0); margin-bottom: 3rem; text-align: center; box-shadow: var(--shadow);">
+            <div style="margin-bottom: 1.5rem;">
+                <i class="fas fa-microphone-alt" style="font-size: 3.5rem; color: #a855f7; display: inline-block; animation: pulse 2s infinite;"></i>
+                <h3 style="color: var(--accent); margin-top: 1rem; font-size: 1.3rem; font-weight: 700;">الاستماع إلى التسجيل الصوتي</h3>
+            </div>
+            
+            <audio controls style="width: 100%; max-width: 700px; display: inline-block; outline: none; border-radius: 30px;">
+                {% if podcast.audio_file %}
+                    <source src="{{ podcast.audio_file.url }}">
+                {% endif %}
+                {% if podcast.audio %}
+                    <source src="{{ podcast.audio|embed_audio }}">
+                {% endif %}
+                متصفحك لا يدعم مشغل الصوتيات.
+            </audio>
+        </div>
+    {% endif %}
+    
+    <div class="detail-content" style="box-shadow: var(--shadow); border: 1px solid var(--border-color, #E2E8F0); padding: 2.5rem;">
+        <h3 style="color: var(--accent); font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid var(--accent); padding-bottom: 8px; display: inline-block;">تفاصيل الحلقة</h3>
+        <p style="color: #475569; font-size: 1.1rem; line-height: 1.8; margin-top: 1rem;">{{ podcast.description|linebreaks }}</p>
+    </div>
+</div>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+        100% { transform: scale(1); }
+    }
+    audio::-webkit-media-controls-panel {
+        background-color: #F8FAFC;
+    }
+</style>
+{% endblock %}

@@ -44,6 +44,28 @@ def embed_video(url):
             
     return url
 
+@register.filter(name='embed_audio')
+def embed_audio(url):
+    if not url:
+        return ""
+    
+    # Google Drive Links conversion to Direct Download/Stream URL
+    if "drive.google.com" in url:
+        if "/file/d/" in url:
+            try:
+                parts = url.split("/file/d/")
+                if len(parts) > 1:
+                    file_id = parts[1].split("/")[0].split("?")[0]
+                    return f"https://docs.google.com/uc?export=download&id={file_id}"
+            except Exception:
+                pass
+        elif "id=" in url:
+            match = re.search(r"[?&]id=([^&]+)", url)
+            if match:
+                return f"https://docs.google.com/uc?export=download&id={match.group(1)}"
+            
+    return url
+
 @register.filter(name='card_image')
 def card_image(item):
     if not item:
@@ -81,4 +103,6 @@ def card_image(item):
                 return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
                 
     # 5. Default Placeholder
+    if item.__class__.__name__ == 'Podcast':
+        return 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&auto=format&fit=crop'
     return 'https://via.placeholder.com/400x300/3b82f6/ffffff?text=Project'

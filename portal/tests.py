@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from portal.models import Service, UserProfile, Investor, TeamMember
+from portal.models import Service, UserProfile, Investor, TeamMember, Podcast
 from django.urls import reverse
 
 class ServiceTests(TestCase):
@@ -246,3 +246,107 @@ class TeamMemberTests(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertFalse(TeamMember.objects.filter(name="كبير جدا").exists())
+
+
+class PodcastTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.podcast_youtube = Podcast.objects.create(
+            title="بودكاست يوتيوب تجريبي",
+            description="وصف بودكاست يوتيوب تجريبي",
+            video="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        )
+        self.podcast_audio = Podcast.objects.create(
+            title="بودكاست صوتي تجريبي",
+            description="وصف بودكاست صوتي تجريبي",
+            audio="https://drive.google.com/file/d/12345/view?usp=sharing"
+        )
+        # Create an admin user
+        self.admin_user = User.objects.create_user(
+            username="admin_podcast",
+            email="admin_pod@example.com",
+            password="adminpassword"
+        )
+        self.admin_profile = self.admin_user.profile
+        self.admin_profile.user_type = "admin"
+        self.admin_profile.save()
+
+    def test_podcast_list_view(self):
+        # Importing Podcast model inside tests to ensure it runs correctly
+        from portal.models import Podcast
+        response = self.client.get(reverse('podcast_list'))
+        self.assertEqual(response.status_code, 200)
+        # Verify both podcasts are present (meaning loop skip logic is fixed!)
+        self.assertContains(response, "بودكاست يوتيوب تجريبي")
+        self.assertContains(response, "بودكاست صوتي تجريبي")
+
+    def test_podcast_detail_view(self):
+        response = self.client.get(reverse('podcast_detail', args=[self.podcast_youtube.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "بودكاست يوتيوب تجريبي")
+        
+        # Check that it uses the embed video filter
+        self.assertContains(response, "https://www.youtube.com/embed/dQw4w9WgXcQ")
+
+        # Check audio podcast detail view
+        response_audio = self.client.get(reverse('podcast_detail', args=[self.podcast_audio.pk]))
+        self.assertEqual(response_audio.status_code, 200)
+        self.assertContains(response_audio, "بودكاست صوتي تجريبي")
+        
+        # Check that it converts Google Drive audio link to docs.google.com download URL
+        self.assertContains(response_audio, "https://docs.google.com/uc?export=download&amp;id=12345")
+
+    def test_admin_add_podcast_valid_audio(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        self.client.login(username="admin_podcast", password="adminpassword")
+        
+        # Valid small MP3 file
+        audio_file = SimpleUploadedFile("test.mp3", b"dummy mp3 data", content_type="audio/mpeg")
+        
+        response = self.client.post(reverse('admin_add_podcast'), {
+            'title': 'بودكاست جديد',
+            'description': 'وصف بودكاست جديد',
+            'audio_file': audio_file
+        })
+        self.assertEqual(response.status_code, 302) # Redirects to dashboard
+        
+        # Should be created successfully
+        new_podcast = Podcast.objects.get(title="بودكاست جديد")
+        self.assertIsNotNone(new_podcast.audio_file)
+
+    def test_admin_add_podcast_invalid_extension(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        self.client.login(username="admin_podcast", password="adminpassword")
+        
+        # Invalid TXT extension
+        audio_file = SimpleUploadedFile("test.txt", b"dummy txt data", content_type="text/plain")
+        
+        response = self.client.post(reverse('admin_add_podcast'), {
+            'title': 'بودكاست غير صالح',
+            'description': 'وصف بودكاست غير صالح',
+            'audio_file': audio_file
+        })
+        self.assertEqual(response.status_code, 302) # Redirects to dashboard
+        
+        # Should NOT be created
+        with self.assertRaises(Podcast.DoesNotExist):
+            Podcast.objects.get(title="بودكاست غير صالح")
+
+    def test_admin_add_podcast_too_large(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        self.client.login(username="admin_podcast", password="adminpassword")
+        
+        # File larger than 5MB
+        large_data = b"0" * (5 * 1024 * 1024 + 1)
+        audio_file = SimpleUploadedFile("large_test.mp3", large_data, content_type="audio/mpeg")
+        
+        response = self.client.post(reverse('admin_add_podcast'), {
+            'title': 'بودكاست ضخم',
+            'description': 'وصف بودكاست ضخم',
+            'audio_file': audio_file
+        })
+        self.assertEqual(response.status_code, 302) # Redirects to dashboard
+        
+        # Should NOT be created
+        with self.assertRaises(Podcast.DoesNotExist):
+            Podcast.objects.get(title="بودكاست ضخم")

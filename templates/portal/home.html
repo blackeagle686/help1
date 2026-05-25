@@ -100,8 +100,7 @@
         <div class="cards-grid">
             {% for maker in stories %}
                 <div class="card" onclick="location.href='{% url 'story_detail' maker.pk %}'">
-                    <div class="card-img" style="background-image: url('{{ maker.image|default:'https://via.placeholder.com/400x300/3b82f6/ffffff?text=Story+Maker' }}')">
-                    </div>
+                    <img class="card-img" src="{{ maker.image|default:'https://via.placeholder.com/400x300/3b82f6/ffffff?text=Story+Maker' }}" alt="{{ maker.name }}">
                     <div class="card-content">
                         <h3 class="card-title">{{ maker.name }}</h3>
                         <div class="card-subtitle">{{ maker.title }}</div>
@@ -122,9 +121,7 @@
         <div class="cards-grid">
             {% for project in projects %}
                 <div class="card" onclick="location.href='{% url 'project_detail' project.pk %}'">
-                    <div class="card-img" style="background-image: url('{{ project|card_image }}')">
-
-                    </div>
+                    <img class="card-img" src="{{ project|card_image }}" alt="{{ project.title }}">
                     <div class="card-content">
                         <h3 class="card-title">{{ project.title }}</h3>
                         <div class="card-subtitle">{{ project.innovator_name }}</div>
@@ -145,8 +142,7 @@
         <div class="cards-grid">
             {% for initiative in initiatives %}
                 <div class="card" onclick="location.href='{% url 'initiative_detail' initiative.pk %}'">
-                    <div class="card-img" style="background-image: url('{{ initiative|card_image }}')">
-                    </div>
+                    <img class="card-img" src="{{ initiative|card_image }}" alt="{{ initiative.title }}">
                     <div class="card-content">
                         <h3 class="card-title">{{ initiative.title }}</h3>
                         <div class="card-subtitle">{{ initiative.founder }}</div>
@@ -167,8 +163,7 @@
         <div class="cards-grid">
             {% for service in services %}
                 <div class="card" onclick="location.href='{% url 'service_detail' service.pk %}'">
-                    <div class="card-img" style="background-image: url('{{ service|card_image }}')">
-                    </div>
+                    <img class="card-img" src="{{ service|card_image }}" alt="{{ service.title }}">
                     <div class="card-content">
                         <h3 class="card-title">{{ service.title }}</h3>
                         <div class="card-subtitle">{{ service.innovator_name }}</div>
