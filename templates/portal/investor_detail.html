@@ -5,14 +5,18 @@
 
 {% block content %}
 {% if investor.video %}
-<div class="detail-page">
-    <button class="back-btn" onclick="location.href='{% url 'investors' %}'">
-        <i class="fas fa-arrow-right"></i> عودة
-    </button>
-    <h1 class="detail-title">{{ investor.title }}</h1>
-    <div class="detail-video">
+<div class="detail-video-hero">
+    <div class="detail-video-bg">
         <iframe src="{{ investor.video|embed_video }}" allowfullscreen></iframe>
     </div>
+    <div class="detail-hero-content">
+        <button class="hero-back-btn" onclick="location.href='{% url 'investors' %}'">
+            <i class="fas fa-arrow-right"></i> عودة
+        </button>
+        <h1 class="hero-title">{{ investor.title }}</h1>
+    </div>
+</div>
+<div class="detail-page">
 {% else %}
 <div class="detail-hero" style="background-image: url('{{ investor|card_image }}');">
     <div class="detail-hero-content">

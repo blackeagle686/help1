@@ -5,14 +5,18 @@
 
 {% block content %}
 {% if service.video %}
-<div class="detail-page">
-    <button class="back-btn" onclick="location.href='{% url 'services' %}'">
-        <i class="fas fa-arrow-right"></i> عودة
-    </button>
-    <h1 class="detail-title">{{ service.title }}</h1>
-    <div class="detail-video">
+<div class="detail-video-hero">
+    <div class="detail-video-bg">
         <iframe src="{{ service.video|embed_video }}" allowfullscreen></iframe>
     </div>
+    <div class="detail-hero-content">
+        <button class="hero-back-btn" onclick="location.href='{% url 'services' %}'">
+            <i class="fas fa-arrow-right"></i> عودة
+        </button>
+        <h1 class="hero-title">{{ service.title }}</h1>
+    </div>
+</div>
+<div class="detail-page">
 {% else %}
 <div class="detail-hero" style="background-image: url('{{ service|card_image }}');">
     <div class="detail-hero-content">

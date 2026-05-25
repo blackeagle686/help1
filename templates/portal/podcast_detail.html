@@ -4,23 +4,32 @@
 {% block title %}{{ podcast.title }} - بصمة قنا{% endblock %}
 
 {% block content %}
+{% if podcast.video %}
+<div class="detail-video-hero">
+    <div class="detail-video-bg">
+        <iframe src="{{ podcast.video|embed_video }}" allowfullscreen></iframe>
+    </div>
+    <div class="detail-hero-content">
+        <button class="hero-back-btn" onclick="location.href='{% url 'podcast_list' %}'">
+            <i class="fas fa-arrow-right"></i> عودة إلى الحلقات
+        </button>
+        <h1 class="hero-title">{{ podcast.title }}</h1>
+    </div>
+</div>
+{% endif %}
 <div class="detail-page" style="direction: rtl; text-align: right; padding-top: 2rem; padding-bottom: 4rem;">
+    {% if not podcast.video %}
     <button class="back-btn" onclick="location.href='{% url 'podcast_list' %}'">
         <i class="fas fa-arrow-right"></i> عودة إلى الحلقات
     </button>
     
     <h1 class="detail-title" style="margin-bottom: 0.5rem;">{{ podcast.title }}</h1>
+    {% endif %}
     
     <div class="detail-meta" style="margin-bottom: 2.5rem; display: flex; gap: 1.5rem; color: #64748B; font-size: 0.95rem;">
         <span><i class="fas fa-calendar-alt" style="color: var(--accent); margin-left: 5px;"></i> {{ podcast.date|date:"d M Y" }}</span>
         <span><i class="fas fa-headphones" style="color: var(--accent); margin-left: 5px;"></i> بودكاست بصمة قنا</span>
     </div>
-
-    {% if podcast.video %}
-        <div class="detail-video" style="box-shadow: var(--shadow); border: 1px solid var(--border-color, #E2E8F0); margin-bottom: 3rem;">
-            <iframe src="{{ podcast.video|embed_video }}" allowfullscreen></iframe>
-        </div>
-    {% endif %}
     
     {% if podcast.audio or podcast.audio_file %}
         <div class="card" style="padding: 2.5rem 2rem; border-radius: 20px; border: 1px solid var(--border-color, #E2E8F0); margin-bottom: 3rem; text-align: center; box-shadow: var(--shadow);">

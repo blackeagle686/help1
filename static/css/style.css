@@ -612,9 +612,8 @@ header {
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
-    height: 60vh;
+    height: 100vh;
     min-height: 400px;
-    max-height: 600px;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -672,7 +671,45 @@ header {
     line-height: 1.3;
 }
 
-/* Video fallback (full-bleed) */
+/* Video Hero - full-bleed similar to image hero */
+.detail-video-hero {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    height: 60vh;
+    min-height: 400px;
+    max-height: 600px;
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.detail-video-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 40%, transparent 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.detail-video-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.detail-video-bg iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Legacy detail-video kept for backward compat */
 .detail-video {
     width: 100vw;
     position: relative;
@@ -1496,13 +1533,14 @@ footer {
         height: 250px !important;
     }
 
-    .detail-hero {
-        height: 45vh !important;
+    .detail-hero,
+    .detail-video-hero {
+        height: 100vh !important;
         min-height: 280px !important;
-        max-height: 400px !important;
     }
 
-    .detail-hero .hero-title {
+    .detail-hero .hero-title,
+    .detail-video-hero .hero-title {
         font-size: 1.6rem !important;
     }
 
@@ -1589,12 +1627,12 @@ footer {
         background: white !important;
         box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1) !important;
         padding: 0.5rem 1rem !important;
-        justify-content: flex-start !important;
+        justify-content: center !important;
         overflow-x: auto !important;
         scrollbar-width: none !important;
         z-index: 1000 !important;
         border-top: 2px solid var(--accent) !important;
-        gap: 1.2rem !important;
+        gap: 0.5rem !important;
     }
 
     .bottom-nav::-webkit-scrollbar {
@@ -1608,13 +1646,13 @@ footer {
         gap: 0.3rem !important;
         color: var(--text-dark) !important;
         text-decoration: none !important;
-        font-size: 0.7rem !important;
-        padding: 0.5rem !important;
+        font-size: 0.65rem !important;
+        padding: 0.3rem 0.4rem !important;
         flex-shrink: 0 !important;
     }
 
     .bottom-nav a i {
-        font-size: 1.3rem !important;
+        font-size: 1.1rem !important;
     }
 
     .bottom-nav a.active {
