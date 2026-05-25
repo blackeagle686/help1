@@ -64,9 +64,8 @@ header {
 
 /* 3. حجم صورة اللوجو */
 .logo-icon {
-    width: 150px !important;
-    /* صغرنا الحجم عشان السطر يقضي */
-    height: 150px !important;
+    width: 55px !important;
+    height: 55px !important;
     background: none !important;
     display: flex;
     align-items: center;
@@ -109,8 +108,16 @@ header {
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
     white-space: nowrap;
+}
+
+.nav-link i, .dropdown-trigger i, .dropdown-item i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
 }
 
 
@@ -1574,4 +1581,228 @@ footer {
     .nav-menu {
         overflow: visible !important;
     }
+}
+
+/* ===== DARK MODE OVERRIDES FOR ADMIN DASHBOARD & GENERAL ELEMENTS ===== */
+.dark-mode .dashboard-header,
+.dark-mode .stat-card,
+.dark-mode .admin-tabs,
+.dark-mode #admin-files > div,
+.dark-mode #admin-danger > div {
+    background-color: #1E1E1E !important;
+    background: #1E1E1E !important;
+    color: #E2E8F0 !important;
+}
+
+.dark-mode .stat-card .number {
+    color: var(--accent) !important;
+}
+
+.dark-mode .data-table th {
+    background-color: #2D2D2D !important;
+    color: #F8FAFC !important;
+}
+
+.dark-mode .data-table td {
+    color: #E2E8F0 !important;
+    border-bottom: 1px solid #2D2D2D !important;
+}
+
+.dark-mode .data-table tr:hover {
+    background-color: #252525 !important;
+}
+
+.dark-mode .admin-tab {
+    color: #E2E8F0 !important;
+}
+
+.dark-mode .admin-tab.active {
+    background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+    color: white !important;
+}
+
+/* Modals and Forms in Dark Mode */
+.dark-mode .modal-content {
+    background-color: #1E1E1E !important;
+    color: #E2E8F0 !important;
+}
+
+.dark-mode .modal-content h2 {
+    color: var(--accent) !important;
+}
+
+.dark-mode .modal-content label {
+    color: #E2E8F0 !important;
+}
+
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+    background-color: #2D2D2D !important;
+    color: #E2E8F0 !important;
+    border: 2px solid #404040 !important;
+}
+
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+    color: #94A3B8 !important;
+}
+
+.dark-mode select option {
+    background-color: #1E1E1E !important;
+    color: #E2E8F0 !important;
+}
+
+/* Action Buttons in Dark Mode */
+.dark-mode .btn-edit,
+.dark-mode .action-btn.btn-edit {
+    background: #334155 !important;
+    color: #F1F5F9 !important;
+}
+
+.dark-mode .btn-approve,
+.dark-mode .action-btn.btn-approve {
+    background: #064e3b !important;
+    color: #34d399 !important;
+}
+
+.dark-mode .btn-delete,
+.dark-mode .btn-reject,
+.dark-mode .action-btn.btn-delete,
+.dark-mode .action-btn.btn-reject {
+    background: #7f1d1d !important;
+    color: #fca5a5 !important;
+}
+
+.dark-mode .badge-verified {
+    background: #064e3b !important;
+    color: #34d399 !important;
+}
+
+.dark-mode .badge-pending {
+    background: #78350f !important;
+    color: #fcd34d !important;
+}
+
+/* ===== ADDITIONAL DARK MODE OVERRIDES FOR DETAIL CONTENT, DROPDOWN MENU, AND CARDS ===== */
+.dark-mode .detail-content {
+    background-color: #1E1E1E !important;
+    background: #1E1E1E !important;
+    color: #E2E8F0 !important;
+}
+
+.dark-mode .detail-content h1,
+.dark-mode .detail-content h2,
+.dark-mode .detail-content h3,
+.dark-mode .detail-content h4,
+.dark-mode .detail-content p,
+.dark-mode .detail-content li,
+.dark-mode .detail-content span {
+    color: #E2E8F0 !important;
+}
+
+.dark-mode .dropdown-menu {
+    background-color: #1E1E1E !important;
+    background: #1E1E1E !important;
+    border-color: #2D2D2D !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark-mode .dropdown-item {
+    color: #E2E8F0 !important;
+}
+
+.dark-mode .dropdown-item:hover {
+    background: rgba(249, 115, 22, 0.1) !important;
+    color: var(--accent) !important;
+}
+
+.dark-mode .card {
+    background-color: #1E1E1E !important;
+    background: #1E1E1E !important;
+    color: #E2E8F0 !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-mode .card p,
+.dark-mode .card span,
+.dark-mode .card div,
+.dark-mode .card-desc,
+.dark-mode .card-meta,
+.dark-mode .card-subtitle {
+    color: #CBD5E1 !important;
+}
+
+.dark-mode .card-title {
+    color: var(--accent) !important;
+}
+
+/* ===== ABOUT PAGE CLASSES ===== */
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.about-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.about-text {
+    color: #64748B;
+    margin-top: 0.5rem;
+}
+
+.about-team-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-dark);
+}
+
+.about-member-card {
+    text-align: center;
+    padding: 2rem;
+    cursor: default;
+}
+
+.member-name {
+    color: var(--primary-dark);
+}
+
+.member-role {
+    font-size: 0.85rem;
+    color: #64748B;
+}
+
+/* ===== ABOUT PAGE DARK MODE OVERRIDES ===== */
+.dark-mode .about-card {
+    background-color: #1E1E1E !important;
+    background: #1E1E1E !important;
+    color: #E2E8F0 !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-mode .about-card h3 {
+    color: var(--accent) !important;
+}
+
+.dark-mode .about-text {
+    color: #CBD5E1 !important;
+}
+
+.dark-mode .about-team-title {
+    color: var(--accent) !important;
+}
+
+.dark-mode .member-name {
+    color: #E2E8F0 !important;
+}
+
+.dark-mode .member-role {
+    color: #CBD5E1 !important;
 }

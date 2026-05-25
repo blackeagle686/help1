@@ -8,23 +8,23 @@
         <h2>عن بصمة</h2>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-        <div style="background: white; padding: 2rem; border-radius: 20px; box-shadow: var(--shadow); text-align: center;">
+    <div class="about-grid">
+        <div class="about-card">
             <i class="fas fa-eye" style="color: var(--accent); font-size: 3rem; margin-bottom: 1rem;"></i>
             <h3>الرؤية</h3>
-            <p style="color: #64748B; margin-top: 0.5rem;">أن نكون المنصة الرائدة في تمكين ودعم المبتكرين والمبدعين بمحافظة قنا وصعيد مصر للوصول إلى العالمية.</p>
+            <p class="about-text">أن نكون المنصة الرائدة في تمكين ودعم المبتكرين والمبدعين بمحافظة قنا وصعيد مصر للوصول إلى العالمية.</p>
         </div>
-        <div style="background: white; padding: 2rem; border-radius: 20px; box-shadow: var(--shadow); text-align: center;">
+        <div class="about-card">
             <i class="fas fa-bullseye" style="color: var(--accent); font-size: 3rem; margin-bottom: 1rem;"></i>
             <h3>الهدف والرسالة</h3>
-            <p style="color: #64748B; margin-top: 0.5rem;">ربط المبتكرين وأصحاب المشاريع الريادية مع المستثمرين ورجال الأعمال وتسهيل التبادل الفكري والمعرفي والتنموي.</p>
+            <p class="about-text">ربط المبتكرين وأصحاب المشاريع الريادية مع المستثمرين ورجال الأعمال وتسهيل التبادل الفكري والمعرفي والتنموي.</p>
         </div>
     </div>
 
-    <h3 style="text-align: center; margin-bottom: 2rem; color: var(--primary-dark);">فريق العمل</h3>
+    <h3 class="about-team-title">فريق العمل</h3>
     <div class="cards-grid">
         {% for member in team %}
-            <div class="card" style="text-align: center; padding: 2rem; cursor: default;">
+            <div class="card about-member-card">
                 {% if member.image %}
                     <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
                         <img src="{{ member.image.url }}" alt="{{ member.name }}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);">
@@ -32,8 +32,8 @@
                 {% else %}
                     <i class="fas fa-user-circle" style="font-size: 4rem; color: var(--accent); margin-bottom: 1rem;"></i>
                 {% endif %}
-                <h4 style="color: var(--primary-dark);">{{ member.name }}</h4>
-                <span style="font-size: 0.85rem; color: #64748B;">{{ member.role }}</span>
+                <h4 class="member-name">{{ member.name }}</h4>
+                <span class="member-role">{{ member.role }}</span>
             </div>
         {% endfor %}
     </div>
