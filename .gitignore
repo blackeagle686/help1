@@ -42,3 +42,6 @@ venv.bak/
 .idea/
 .vscode/
 *.sw?
+
+deploy_basma.sh
+start_ngrok.py
