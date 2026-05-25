@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from portal.models import Service, UserProfile, Investor
+from portal.models import Service, UserProfile, Investor, TeamMember
 from django.urls import reverse
 
 class ServiceTests(TestCase):
@@ -137,3 +137,112 @@ class InvestorTests(TestCase):
         
         with self.assertRaises(Investor.DoesNotExist):
             Investor.objects.get(pk=self.investor.pk)
+
+
+class TeamMemberTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.member = TeamMember.objects.create(
+            name="عضو تجريبي",
+            role="مطور برمجيات",
+            image="team/member.jpg"
+        )
+        self.admin_user = User.objects.create_user(
+            username="admin",
+            email="admin@example.com",
+            password="adminpassword"
+        )
+        self.admin_profile = self.admin_user.profile
+        self.admin_profile.user_type = "admin"
+        self.admin_profile.save()
+
+    def test_about_view_with_team_members(self):
+        response = self.client.get(reverse('about'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "عضو تجريبي")
+        self.assertContains(response, "مطور برمجيات")
+
+    def test_about_view_fallback(self):
+        TeamMember.objects.all().delete()
+        response = self.client.get(reverse('about'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "أحمد علي")
+
+    def test_admin_add_team_member(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        test_image = SimpleUploadedFile(
+            name='test_image.jpg',
+            content=b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b',
+            content_type='image/gif'
+        )
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post(reverse('admin_add_team_member'), {
+            'name': 'عضو جديد',
+            'role': 'مصمم واجهات',
+            'image': test_image
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        new_member = TeamMember.objects.get(name="عضو جديد")
+        self.assertEqual(new_member.role, "مصمم واجهات")
+        self.assertTrue(new_member.image.name.startswith('team/test_image'))
+
+    def test_admin_edit_team_member(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        test_image = SimpleUploadedFile(
+            name='edited_image.jpg',
+            content=b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b',
+            content_type='image/gif'
+        )
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post(reverse('admin_edit_team_member', args=[self.member.pk]), {
+            'name': 'اسم معدل',
+            'role': 'دور معدل',
+            'image': test_image
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        self.member.refresh_from_db()
+        self.assertEqual(self.member.name, "اسم معدل")
+        self.assertEqual(self.member.role, "دور معدل")
+        self.assertTrue(self.member.image.name.startswith('team/edited_image'))
+
+    def test_admin_delete_team_member(self):
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post(reverse('admin_delete_team_member', args=[self.member.pk]))
+        self.assertEqual(response.status_code, 302)
+        
+        with self.assertRaises(TeamMember.DoesNotExist):
+            TeamMember.objects.get(pk=self.member.pk)
+
+    def test_admin_add_team_member_invalid_extension(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        bad_file = SimpleUploadedFile(
+            name='script.sh',
+            content=b'echo "bad script"',
+            content_type='text/x-shellscript'
+        )
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post(reverse('admin_add_team_member'), {
+            'name': 'مخترق',
+            'role': 'تجسس',
+            'image': bad_file
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(TeamMember.objects.filter(name="مخترق").exists())
+
+    def test_admin_add_team_member_oversized(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        huge_file = SimpleUploadedFile(
+            name='huge.jpg',
+            content=b'\x00' * (3 * 1024 * 1024),
+            content_type='image/jpeg'
+        )
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post(reverse('admin_add_team_member'), {
+            'name': 'كبير جدا',
+            'role': 'حجم زائد',
+            'image': huge_file
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(TeamMember.objects.filter(name="كبير جدا").exists())

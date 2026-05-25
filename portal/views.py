@@ -12,7 +12,7 @@ import os
 
 from .models import (
     UserProfile, StoryMaker, Project, Initiative,
-    Nomination, ChatMessage, BreakingNews, UploadedFile, Podcast, Service, Investor
+    Nomination, ChatMessage, BreakingNews, UploadedFile, Podcast, Service, Investor, TeamMember
 )
 
 # ===== MAIN PAGES =====
@@ -65,7 +65,10 @@ def projects_list(request):
     return render(request, 'portal/projects_list.html', context)
 
 def about(request):
-    team = ['أحمد علي', 'منى سعيد', 'محمد جلال', 'فاطمة الزهراء', 'خالد عبدالله', 'نورهان أحمد', 'عمر حسن', 'سارة محمود', 'أحمد سامي', 'إسراء محمد', 'محمود علي', 'أسماء محمود', 'يوسف أحمد', 'رقية مصطفى']
+    team = TeamMember.objects.all().order_by('-date')
+    if not team.exists():
+        default_names = ['أحمد علي', 'منى سعيد', 'محمد جلال', 'فاطمة الزهراء', 'خالد عبدالله', 'نورهان أحمد', 'عمر حسن', 'سارة محمود', 'أحمد سامي', 'إسراء محمد', 'محمود علي', 'أسماء محمود', 'يوسف أحمد', 'رقية مصطفى']
+        team = [{'name': name, 'role': 'عضو فريق العمل', 'image': None} for name in default_names]
     context = {'team': team}
     return render(request, 'portal/about.html', context)
 
@@ -190,6 +193,7 @@ def dashboard(request):
         podcasts = Podcast.objects.all().order_by('-date')
         all_services = Service.objects.all().order_by('-date')
         all_investors = Investor.objects.all().order_by('-date')
+        all_team_members = TeamMember.objects.all().order_by('-date')
         
         context = {
             'profile': profile,
@@ -202,6 +206,7 @@ def dashboard(request):
             'podcasts': podcasts,
             'all_services': all_services,
             'all_investors': all_investors,
+            'all_team_members': all_team_members,
         }
         return render(request, 'portal/admin_dashboard.html', context)
         
@@ -1184,5 +1189,78 @@ def admin_delete_investor(request, pk):
     investor = get_object_or_404(Investor, pk=pk)
     investor.delete()
     messages.success(request, 'تم حذف المستثمر بنجاح.')
+    return redirect('dashboard')
+
+
+def validate_team_member_image(image):
+    if not image:
+        return True, None
+    import os
+    ext = os.path.splitext(image.name)[1].lower()
+    valid_extensions = ['.png', '.jpg', '.jpeg']
+    if ext not in valid_extensions:
+        return False, 'يجب أن تكون الصورة بصيغة png أو jpg أو jpeg فقط.'
+    if image.size > 2 * 1024 * 1024:
+        return False, 'يجب أن لا يتجاوز حجم الصورة 2 ميجابايت.'
+    return True, None
+
+
+@login_required
+@csrf_exempt
+def admin_add_team_member(request):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        role = request.POST.get('role')
+        image = request.FILES.get('image')
+        
+        if name and role:
+            if image:
+                is_valid, err_msg = validate_team_member_image(image)
+                if not is_valid:
+                    messages.error(request, err_msg)
+                    return redirect('dashboard')
+            
+            TeamMember.objects.create(
+                name=name,
+                role=role,
+                image=image or None
+            )
+            messages.success(request, 'تم إضافة عضو فريق العمل بنجاح.')
+    return redirect('dashboard')
+
+@login_required
+@csrf_exempt
+def admin_edit_team_member(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    member = get_object_or_404(TeamMember, pk=pk)
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        role = request.POST.get('role')
+        new_image = request.FILES.get('image')
+        
+        if new_image:
+            is_valid, err_msg = validate_team_member_image(new_image)
+            if not is_valid:
+                messages.error(request, err_msg)
+                return redirect('dashboard')
+            member.image = new_image
+            
+        member.name = name
+        member.role = role
+        member.save()
+        messages.success(request, 'تم تحديث بيانات عضو فريق العمل بنجاح.')
+    return redirect('dashboard')
+
+@login_required
+@csrf_exempt
+def admin_delete_team_member(request, pk):
+    if not request.user.profile.user_type == 'admin':
+        return redirect('home')
+    member = get_object_or_404(TeamMember, pk=pk)
+    member.delete()
+    messages.success(request, 'تم حذف عضو فريق العمل بنجاح.')
     return redirect('dashboard')
     

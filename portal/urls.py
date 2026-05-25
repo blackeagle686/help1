@@ -78,8 +78,7 @@ urlpatterns = [
     path('admin/add-investor/', views.admin_add_investor, name='admin_add_investor'),
     path('admin/investors/<int:pk>/edit/', views.admin_edit_investor, name='admin_edit_investor'),
     path('admin/investors/<int:pk>/delete/', views.admin_delete_investor, name='admin_delete_investor'),
-    
-
-
-
+    path('admin/add-team-member/', views.admin_add_team_member, name='admin_add_team_member'),
+    path('admin/team-members/<int:pk>/edit/', views.admin_edit_team_member, name='admin_edit_team_member'),
+    path('admin/team-members/<int:pk>/delete/', views.admin_delete_team_member, name='admin_delete_team_member'),
 ]

@@ -61,6 +61,7 @@
             <div class="admin-tab" onclick="switchAdminTab('danger')">⚠️ خطر</div>
             <div class="admin-tab" onclick="switchAdminTab('services')">الخدمات</div>
             <div class="admin-tab" onclick="switchAdminTab('investorShowcase')">🤝 شركاء الاستثمار</div>
+            <div class="admin-tab" onclick="switchAdminTab('teamMembers')">👥 فريق العمل</div>
         </div>
 
         <!-- Quick Add Buttons -->
@@ -82,6 +83,9 @@
             </button>
             <button class="hero-btn hero-btn-primary" style="background: #14b8a6;" onclick="showModal('add-investor-modal')">
                 <i class="fas fa-plus"></i> إضافة مستثمر
+            </button>
+            <button class="hero-btn hero-btn-primary" style="background: #e11d48;" onclick="showModal('add-team-member-modal')">
+                <i class="fas fa-plus"></i> إضافة عضو فريق عمل
             </button>
         </div>
 
@@ -342,6 +346,68 @@
                             </div>
                         {% empty %}
                             <tr><td colspan="6" style="text-align: center;">لا يوجد شركاء استثمار.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== Team Members Tab ===== -->
+        <div id="admin-teamMembers" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">أعضاء فريق العمل</h3>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>الدور / الوظيفة</th>
+                            <th>الصورة</th>
+                            <th>التحكم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in all_team_members %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ member.name }}</td>
+                                <td>{{ member.role }}</td>
+                                <td>
+                                    {% if member.image %}
+                                        <a href="{{ member.image.url }}" target="_blank" style="color: var(--primary);">عرض الصورة</a>
+                                    {% else %}
+                                        <span style="color: #94a3b8;">لا توجد صورة</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="action-btn btn-edit" style="border: none;" onclick="showModal('edit-team-member-modal-{{ member.pk }}')">تعديل</button>
+                                    <a href="{% url 'admin_delete_team_member' member.pk %}" class="action-btn btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا العضو؟')">حذف</a>
+                                </td>
+                            </tr>
+                            
+                            <!-- Edit Team Member Modal -->
+                            <div class="modal" id="edit-team-member-modal-{{ member.pk }}">
+                                <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+                                    <span class="close-modal" onclick="closeModal('edit-team-member-modal-{{ member.pk }}')">&times;</span>
+                                    <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">تعديل بيانات العضو: {{ member.name }}</h2>
+                                    <form method="POST" action="{% url 'admin_edit_team_member' member.pk %}" enctype="multipart/form-data" onsubmit="return validateTeamMemberForm(this)">
+                                        {% csrf_token %}
+                                        <div style="max-height: 65vh; overflow-y: auto; padding-left: 10px;">
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">الاسم</label>
+                                            <input type="text" name="name" value="{{ member.name }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">الدور / الوظيفة</label>
+                                            <input type="text" name="role" value="{{ member.role }}" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+                                            
+                                            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">تحديث الصورة الشخصية</label>
+                                            <input type="file" name="image" accept="image/*" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+                                        </div>
+                                        <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top: 1rem;">تحديث البيانات</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <tr><td colspan="5" style="text-align: center;">لا يوجد أعضاء فريق عمل مضافين.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -758,14 +824,6 @@
             <input type="url" name="image" placeholder="رابط الصورة الرئيسية" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
             <input type="url" name="cover_image" placeholder="رابط صورة الغلاف (Banner)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
             <textarea name="news_content" rows="3" placeholder="أخبار ومستجدات المشروع (اختياري)" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;"></textarea>
-            <input type="text" name="faculty" placeholder="الكلية / التخصص" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
-            <select name="category" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
-                <option value="عام">عام</option>
-                <option value="هندسة">هندسة وتكنولوجيا</option>
-                <option value="ذكاء اصطناعي">ذكاء اصطناعي</option>
-                <option value="بيئة">بيئة وطاقة</option>
-                <option value="طب">علوم طبية</option>
-            </select>
             <input type="text" name="innovator" placeholder="اسم المبتكر" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
             <textarea name="description" rows="4" placeholder="وصف المشروع" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required></textarea>
             <button type="submit" style="width:100%; padding:1rem; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ المشروع</button>
@@ -882,13 +940,31 @@
         </form>
     </div>
 </div>
+
+<!-- Add Team Member Modal -->
+<div class="modal" id="add-team-member-modal">
+    <div class="modal-content" style="max-width: 600px; text-align: right; direction: rtl;">
+        <span class="close-modal" onclick="closeModal('add-team-member-modal')">&times;</span>
+        <h2 style="color: var(--primary-dark); margin-bottom: 2rem;">إضافة عضو فريق عمل جديد</h2>
+        <form method="POST" action="{% url 'admin_add_team_member' %}" enctype="multipart/form-data" onsubmit="return validateTeamMemberForm(this)">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="اسم العضو" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            <input type="text" name="role" placeholder="الدور / الوظيفة" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;" required>
+            
+            <label style="display: block; font-weight: bold; margin-bottom: 0.5rem; text-align: right;">الصورة الشخصية</label>
+            <input type="file" name="image" accept="image/*" style="width:100%; padding:1rem; border:2px solid #E2E8F0; border-radius:10px; margin-bottom:1rem;">
+            
+            <button type="submit" style="width:100%; padding:1rem; background:#e11d48; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ العضو</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     function switchAdminTab(tab) {
         // Hide all tabs
-        const tabs = ['users', 'projects', 'investors', 'nominations', 'storyMakers', 'initiatives', 'podcasts', 'files', 'danger', 'services', 'investorShowcase'];
+        const tabs = ['users', 'projects', 'investors', 'nominations', 'storyMakers', 'initiatives', 'podcasts', 'files', 'danger', 'services', 'investorShowcase', 'teamMembers'];
         tabs.forEach(t => {
             const el = document.getElementById('admin-' + t);
             if (el) el.style.display = 'none';
@@ -901,6 +977,28 @@
         // Update active state on tab buttons
         document.querySelectorAll('.admin-tab').forEach(el => el.classList.remove('active'));
         event.target.classList.add('active');
+    }
+
+    function validateTeamMemberForm(form) {
+        const fileInput = form.querySelector('input[type="file"][name="image"]');
+        if (fileInput && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const fileName = file.name.toLowerCase();
+            const allowedExtensions = ['.png', '.jpg', '.jpeg'];
+            const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+            
+            if (!isValidExtension) {
+                alert('يجب أن تكون الصورة بصيغة png أو jpg أو jpeg فقط.');
+                return false;
+            }
+            
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            if (file.size > maxSize) {
+                alert('يجب أن لا يتجاوز حجم الصورة 2 ميجابايت.');
+                return false;
+            }
+        }
+        return true;
     }
 </script>
 {% endblock %}

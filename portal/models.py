@@ -231,3 +231,13 @@ class Investor(models.Model):
     def __str__(self):
         return self.title
 
+
+class TeamMember(models.Model):
+    name = models.CharField(max_length=150)
+    role = models.CharField(max_length=150)
+    image = models.ImageField(upload_to='team/', blank=True, null=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
