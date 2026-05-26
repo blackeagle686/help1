@@ -1537,25 +1537,45 @@ footer {
         height: 250px !important;
     }
 
-    .detail-hero,
-    .detail-video-hero {
+    .detail-hero {
         height: auto !important;
         aspect-ratio: 16/9;
         min-height: 200px !important;
         max-height: none !important;
     }
 
+    .detail-video-hero {
+        width: 100% !important;
+        left: auto !important;
+        right: auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        height: auto !important;
+        aspect-ratio: 16/9;
+        min-height: 200px !important;
+        max-height: none !important;
+        margin-bottom: 2rem !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .detail-video-hero::after {
+        display: none !important;
+    }
+
     .detail-video-bg {
-        padding: 12px !important;
+        padding: 0 !important;
+        position: absolute !important;
+        inset: 0 !important;
         box-sizing: border-box !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
     }
 
     .detail-video-bg iframe {
-        border-radius: 12px !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
     }
 
     .detail-hero .hero-title,
