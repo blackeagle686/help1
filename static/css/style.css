@@ -1545,6 +1545,19 @@ footer {
         max-height: none !important;
     }
 
+    .detail-video-bg {
+        padding: 12px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .detail-video-bg iframe {
+        border-radius: 12px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    }
+
     .detail-hero .hero-title,
     .detail-video-hero .hero-title {
         font-size: 1.6rem !important;
