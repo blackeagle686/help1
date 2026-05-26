@@ -1550,14 +1550,12 @@ footer {
         right: auto !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
-        height: auto !important;
-        aspect-ratio: 16/9;
-        min-height: 200px !important;
-        max-height: none !important;
+        height: 280px !important;
         margin-bottom: 2rem !important;
         border-radius: 12px !important;
         overflow: hidden !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+        background-color: #000 !important;
     }
 
     .detail-video-hero::after {
@@ -1566,8 +1564,9 @@ footer {
 
     .detail-video-bg {
         padding: 0 !important;
-        position: absolute !important;
-        inset: 0 !important;
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
         box-sizing: border-box !important;
     }
 
