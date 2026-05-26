@@ -24,7 +24,11 @@
     {% endif %}
 ">
     <div class="detail-video-bg" style="display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
-        <iframe src="{{ maker.video|embed_video }}" allowfullscreen style="border: none; width: 100%; height: 100%; overflow: hidden;" scrolling="no"></iframe>
+        {% if maker.video|is_direct_video %}
+            <video src="{{ maker.video }}" controls style="border: none; width: 100%; height: 100%; object-fit: contain; outline: none;"></video>
+        {% else %}
+            <iframe src="{{ maker.video|embed_video }}" allowfullscreen style="border: none; width: 100%; height: 100%; overflow: hidden;" scrolling="no"></iframe>
+        {% endif %}
     </div>
 </div>
 {% endif %}

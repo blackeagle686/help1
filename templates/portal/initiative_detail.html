@@ -24,7 +24,11 @@
     {% endif %}
 ">
     <div class="detail-video-bg" style="display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
-        <iframe src="{{ initiative.video|embed_video }}" allowfullscreen style="border: none; width: 100%; height: 100%; overflow: hidden;" scrolling="no"></iframe>
+        {% if initiative.video|is_direct_video %}
+            <video src="{{ initiative.video }}" controls style="border: none; width: 100%; height: 100%; object-fit: contain; outline: none;"></video>
+        {% else %}
+            <iframe src="{{ initiative.video|embed_video }}" allowfullscreen style="border: none; width: 100%; height: 100%; overflow: hidden;" scrolling="no"></iframe>
+        {% endif %}
     </div>
 </div>
 {% endif %}

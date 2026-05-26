@@ -57,6 +57,13 @@ def embed_video(url):
             
     return ""
 
+@register.filter(name='is_direct_video')
+def is_direct_video(url):
+    if not url:
+        return False
+    url_lower = url.lower().strip()
+    return url_lower.endswith(('.mp4', '.webm', '.ogg', '.mov', '.avi')) or any(ext in url_lower for ext in ['.mp4?', '.webm?', '.ogg?'])
+
 @register.filter(name='embed_audio')
 def embed_audio(url):
     if not url:
