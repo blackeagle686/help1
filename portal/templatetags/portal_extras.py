@@ -10,20 +10,20 @@ def embed_video(url):
     
     url_lower = url.lower().strip()
     
-    # Google Drive Links conversion to Direct Stream Download URL
+    # Google Drive Links conversion to Embed Preview URL
     if "drive.google.com" in url_lower:
         if "/file/d/" in url:
             try:
                 parts = url.split("/file/d/")
                 if len(parts) > 1:
                     video_id = parts[1].split("/")[0].split("?")[0]
-                    return f"https://docs.google.com/uc?export=download&id={video_id}"
+                    return f"https://drive.google.com/file/d/{video_id}/preview"
             except Exception:
                 pass
         elif "id=" in url:
             match = re.search(r"[?&]id=([^&]+)", url)
             if match:
-                return f"https://docs.google.com/uc?export=download&id={match.group(1)}"
+                return f"https://drive.google.com/file/d/{match.group(1)}/preview"
             
     # YouTube Links conversion to Embed URL
     elif "youtube.com" in url_lower or "youtu.be" in url_lower:
@@ -68,9 +68,7 @@ def is_direct_video(url):
     if not url:
         return False
     url_lower = url.lower().strip()
-    is_gd = "drive.google.com" in url_lower
-    is_file = url_lower.endswith(('.mp4', '.webm', '.ogg', '.mov', '.avi')) or any(ext in url_lower for ext in ['.mp4?', '.webm?', '.ogg?'])
-    return is_gd or is_file
+    return url_lower.endswith(('.mp4', '.webm', '.ogg', '.mov', '.avi')) or any(ext in url_lower for ext in ['.mp4?', '.webm?', '.ogg?'])
 
 @register.filter(name='embed_audio')
 def embed_audio(url):
