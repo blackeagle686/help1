@@ -1,8 +1,3 @@
-
-
-/* -------------------------------------- */
-
-
 * {
     margin: 0;
     padding: 0;
@@ -28,6 +23,10 @@
     --shadow: 0 10px 30px rgba(33, 97, 140, 0.1);
     
     --heading-color: var(--primary-dark);
+}
+
+html, body {
+    overflow-x: hidden;
 }
 
 body {
@@ -521,24 +520,16 @@ header {
     box-shadow: 0 20px 40px rgba(183, 159, 106, 0.25);
 }
 
-/* ===== CARD MEDIA - responsive aspect-ratio approach ===== */
 .card-video {
     position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
+    height: 200px;
     overflow: hidden;
-    /* fallback for browsers without aspect-ratio */
-    min-height: 160px;
-    max-height: 280px;
 }
 
 .card-video iframe {
-    position: absolute;
-    inset: 0;
     width: 100%;
     height: 100%;
     border: none;
-    object-fit: cover;
 }
 
 .card-video audio {
@@ -557,32 +548,12 @@ header {
     background: linear-gradient(135deg, var(--primary-dark), var(--accent));
 }
 
-/* Wrapper needed when img is used directly (not inside a positioned container) */
-.card-img-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    min-height: 160px;
-    max-height: 280px;
-}
-
 .card-img {
     width: 100%;
-    height: 100%;
+    height: 220px;
     object-fit: cover;
-    object-position: center top;
     display: block;
     transition: transform 0.5s ease;
-    /* When used without wrapper, preserve good ratio with clamp */
-    max-height: clamp(160px, 30vw, 280px);
-}
-
-/* If card-img is direct child of card (no wrapper), constrain with aspect-ratio container */
-.card > .card-img {
-    aspect-ratio: 16 / 9;
-    max-height: none;
-    height: auto;
 }
 
 .card:hover .card-img {
@@ -645,7 +616,8 @@ header {
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
-    height: clamp(350px, 70vh, 100vh);
+    height: 100vh;
+    min-height: 400px;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -711,7 +683,9 @@ header {
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
-    height: clamp(280px, 56.25vw, 600px); /* true 16:9 ratio clamped */
+    height: 60vh;
+    min-height: 400px;
+    max-height: 600px;
     margin-bottom: 2.5rem;
     overflow: hidden;
     display: flex;
@@ -731,15 +705,12 @@ header {
     position: absolute;
     inset: 0;
     z-index: 0;
-    width: 100%;
-    height: 100%;
 }
 
 .detail-video-bg iframe {
     width: 100%;
     height: 100%;
     border: none;
-    display: block;
 }
 
 /* Legacy detail-video kept for backward compat */
@@ -750,8 +721,7 @@ header {
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
-    /* Responsive 16:9 ratio */
-    height: clamp(220px, 56.25vw, 540px);
+    height: 500px;
     margin-bottom: 2.5rem;
     border-radius: 0;
     overflow: hidden;
@@ -759,12 +729,9 @@ header {
 }
 
 .detail-video iframe {
-    position: absolute;
-    inset: 0;
     width: 100%;
     height: 100%;
     border: none;
-    display: block;
 }
 
 /* Legacy detail-image kept for any non-hero usage */
@@ -775,7 +742,7 @@ header {
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
-    height: clamp(220px, 45vw, 540px);
+    height: 500px;
     margin-bottom: 2.5rem;
     border-radius: 0;
     overflow: hidden;
@@ -791,7 +758,6 @@ header {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
     display: block;
     transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
@@ -1544,6 +1510,30 @@ footer {
         font-size: 14px !important;
     }
 
+    h1, .h1 {
+        font-size: 1.3rem !important;
+    }
+
+    h2, .h2 {
+        font-size: 1.1rem !important;
+    }
+
+    h3, .h3 {
+        font-size: 1rem !important;
+    }
+
+    h4, .h4 {
+        font-size: 0.9rem !important;
+    }
+
+    h5, .h5 {
+        font-size: 1rem !important;
+    }
+
+    h6, .h6 {
+        font-size: 0.9rem !important;
+    }
+
     .hero h1 {
         font-size: 1.6rem !important;
     }
@@ -1561,24 +1551,54 @@ footer {
     }
 }
 
-/* 7. تحسين الفيديو والصور على الموبايل */
+/* 7. تحسين الفيديو */
 @media (max-width: 768px) {
     .detail-video {
-        height: clamp(180px, 56.25vw, 300px) !important;
+        height: 200px !important;
     }
 
     .detail-image {
-        height: clamp(180px, 45vw, 300px) !important;
+        height: 250px !important;
     }
 
     .detail-hero {
-        height: clamp(300px, 60vh, 520px) !important;
-        min-height: 260px !important;
+        height: auto !important;
+        aspect-ratio: 16/9;
+        min-height: 200px !important;
+        max-height: none !important;
     }
 
     .detail-video-hero {
-        height: clamp(200px, 56.25vw, 400px) !important;
-        min-height: 200px !important;
+        width: 100% !important;
+        left: auto !important;
+        right: auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        height: 280px !important;
+        margin-bottom: 2rem !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+        background-color: #000 !important;
+    }
+
+    .detail-video-hero::after {
+        display: none !important;
+    }
+
+    .detail-video-bg {
+        padding: 0 !important;
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .detail-video-bg iframe {
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
     }
 
     .detail-hero .hero-title,
@@ -1586,13 +1606,36 @@ footer {
         font-size: 1.6rem !important;
     }
 
+    .detail-title {
+        font-size: 1.6rem !important;
+        line-height: 1.3 !important;
+    }
+
+    .detail-header-block {
+        padding: 1.5rem 1rem 0.5rem !important;
+    }
+
+    .detail-page {
+        padding: 1.2rem 1rem !important;
+    }
+
+    .detail-meta {
+        flex-wrap: wrap !important;
+        gap: 1rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .detail-content {
+        padding: 1.2rem 1rem !important;
+        border-radius: 15px !important;
+    }
+
     .detail-hero-content {
         padding: 1.5rem 1rem !important;
     }
 
-    /* card-video uses aspect-ratio now, only override min-height */
     .card-video {
-        min-height: 140px !important;
+        height: 180px !important;
     }
 }
 
@@ -1734,24 +1777,10 @@ footer {
         border-radius: 15px !important;
     }
 
-    /* card-img and card-video now use aspect-ratio — don't override with fixed height */
-    .card-img {
-        /* aspect-ratio from base rule handles sizing; just ensure object-fit stays correct */
-        object-fit: cover !important;
-        object-position: center top !important;
-    }
-
-    .card-video {
-        /* min-height override is in section 7 above */
-        min-height: 140px !important;
-    }
-
-    /* Podcast inline-style containers: override to avoid stretching */
+    .card-img,
+    .card-video,
     .podcast-card div[style*="height: 200px"] {
-        height: auto !important;
-        aspect-ratio: 16 / 9 !important;
-        min-height: 140px !important;
-        max-height: 220px !important;
+        height: 160px !important;
     }
 
     .card-content {
@@ -2224,74 +2253,4 @@ footer {
 
 .dark-mode .member-role {
     color: #CBD5E1 !important;
-}
-
-/* ===================================================
-   GLOBAL RESPONSIVE MEDIA RULES
-   Prevent all images/iframes from overflowing or stretching
-   =================================================== */
-
-/* All images: never overflow container */
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-/* Images with explicit height (like card-img, team avatars):
-   already have object-fit set per-rule, this is a safety net */
-img[style*="height"] {
-    max-width: 100%;
-}
-
-/* All iframes: responsive by default */
-iframe {
-    max-width: 100%;
-}
-
-/* Team member avatar: responsive circular image */
-.team-member-img,
-.member-avatar img,
-.about-member img {
-    width: clamp(60px, 12vw, 100px) !important;
-    height: clamp(60px, 12vw, 100px) !important;
-    border-radius: 50% !important;
-    object-fit: cover !important;
-    object-position: center top !important;
-    display: block !important;
-}
-
-/* Quote-card avatar */
-.quote-card img {
-    width: clamp(35px, 6vw, 55px) !important;
-    height: clamp(35px, 6vw, 55px) !important;
-    border-radius: 50% !important;
-    object-fit: cover !important;
-    flex-shrink: 0 !important;
-}
-
-/* Podcast inline image containers — override any fixed height inline style */
-.podcast-card [style*="height: 200px"],
-.podcast-card [style*="height:200px"] {
-    height: auto !important;
-    aspect-ratio: 16 / 9;
-    min-height: 140px;
-}
-
-/* Prevent iframes from collapsing to zero height when no explicit height is set */
-.detail-video iframe,
-.detail-video-bg iframe,
-.card-video iframe {
-    min-height: 140px;
-}
-
-/* On very small screens (320px), hero should never be taller than viewport */
-@media (max-width: 400px) {
-    .detail-hero,
-    .detail-video-hero {
-        height: 55vw !important;
-        min-height: 220px !important;
-    }
-    .card-img {
-        max-height: 200px !important;
-    }
 }
