@@ -8,9 +8,10 @@ def embed_video(url):
     if not url:
         return ""
     
+    url_lower = url.lower()
+    
     # Google Drive Links conversion to Embed Preview URL
-    if "drive.google.com" in url:
-        # e.g., https://drive.google.com/file/d/VIDEO_ID/view...
+    if "drive.google.com" in url_lower:
         if "/file/d/" in url:
             try:
                 parts = url.split("/file/d/")
@@ -19,14 +20,13 @@ def embed_video(url):
                     return f"https://drive.google.com/file/d/{video_id}/preview"
             except Exception:
                 pass
-        # e.g., https://drive.google.com/open?id=VIDEO_ID
         elif "id=" in url:
             match = re.search(r"[?&]id=([^&]+)", url)
             if match:
                 return f"https://drive.google.com/file/d/{match.group(1)}/preview"
             
     # YouTube Links conversion to Embed URL
-    if "youtube.com" in url or "youtu.be" in url:
+    elif "youtube.com" in url_lower or "youtu.be" in url_lower:
         if "embed" in url:
             return url
         elif "watch?v=" in url:
@@ -41,8 +41,21 @@ def embed_video(url):
                     return f"https://www.youtube.com/embed/{video_id}"
             except Exception:
                 pass
+                
+    # Vimeo Links conversion to Embed URL
+    elif "vimeo.com" in url_lower:
+        if "player.vimeo.com" in url:
+            return url
+        else:
+            match = re.search(r"vimeo\.com/(\d+)", url)
+            if match:
+                return f"https://player.vimeo.com/video/{match.group(1)}"
+                
+    # Direct video links
+    elif url_lower.endswith(('.mp4', '.webm', '.ogg')):
+        return url
             
-    return url
+    return ""
 
 @register.filter(name='embed_audio')
 def embed_audio(url):

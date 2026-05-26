@@ -11,32 +11,24 @@
     <h1 class="detail-title" style="margin-top: 1rem; font-weight: 800; font-size: 2.8rem; color: var(--primary-dark);">{{ service.title }}</h1>
 </div>
 
-{% if service.video %}
+{% if service.video and service.video|embed_video %}
 <div class="detail-video-hero" style="
     {% if service.image %}
         background-image: url('{{ service|card_image }}');
-        background-size: cover;
+        background-size: contain;
+        background-repeat: no-repeat;
         background-position: center;
+        background-color: #000;
     {% else %}
         background: linear-gradient(135deg, var(--primary), var(--accent));
     {% endif %}
 ">
     <div class="detail-video-bg" style="display: flex; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
-        <iframe src="{{ service.video|embed_video }}" allowfullscreen style="border: none; width: 100%; height: 100%;"></iframe>
+        <iframe src="{{ service.video|embed_video }}" allowfullscreen style="border: none; width: 100%; height: 100%; overflow: hidden;" scrolling="no"></iframe>
     </div>
 </div>
-{% else %}
-<div class="detail-video-hero" style="
-    {% if service.image %}
-        background-image: url('{{ service|card_image }}');
-        background-size: cover;
-        background-position: center;
-    {% else %}
-        background: linear-gradient(135deg, var(--primary), var(--accent));
-    {% endif %}
-">
-</div>
 {% endif %}
+
 <div class="detail-page">
     
     <div class="detail-meta">
@@ -44,6 +36,16 @@
         <span><i class="fas fa-calendar"></i> {{ service.date|date:"Y-m-d" }}</span>
         <span><i class="fas fa-eye"></i> {{ service.views }} مشاهدة</span>
     </div>
+
+    {% if not service.video or not service.video|embed_video %}
+        {% if service.image %}
+            <div class="detail-image-card" style="background: white; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color, #E2E8F0); padding: 1.5rem; margin-bottom: 2.5rem; overflow: hidden; text-align: center;">
+                <div style="display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 15px;">
+                    <img src="{{ service.image }}" alt="{{ service.title }}" style="max-width: 100%; height: auto; max-height: 450px; object-fit: contain; cursor: pointer; transition: transform 0.3s ease; border-radius: 15px;" onclick="window.open('{{ service.image }}', '_blank')">
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
     
     <div class="detail-content">
         {% if service.description %}
