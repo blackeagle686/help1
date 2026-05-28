@@ -413,7 +413,7 @@ def open_chat(request):
         
     # Generate unique conversation identity key
     # Sort IDs so order doesn't matter
-    participants = sorted([request.user.id, other_user.id if other_user else 'admin'])
+    participants = sorted([str(request.user.id), str(other_user.id) if other_user else 'admin'])
     chat_id = f"chat_{item_type}_{item_id}_{participants[0]}_{participants[1]}"
     
     return JsonResponse({
@@ -425,16 +425,31 @@ def open_chat(request):
 def chat_list(request):
     # Find all chat rooms where current user participated
     sent_msgs = ChatMessage.objects.filter(sender=request.user)
-    recv_msgs = ChatMessage.objects.filter(receiver=request.user)
+    if request.user.profile.user_type == 'admin':
+        recv_msgs = ChatMessage.objects.filter(Q(receiver=request.user) | Q(receiver__isnull=True))
+    else:
+        recv_msgs = ChatMessage.objects.filter(receiver=request.user)
     
     all_rooms = {}
     
     def process_msg(msg):
         # We can group messages by sender-receiver and related items
         other = msg.receiver if msg.sender == request.user else msg.sender
-        other_name = other.first_name or other.username if other else 'الإدارة'
         
-        participants = sorted([request.user.id, other.id if other else 'admin'])
+        is_admin_chat = False
+        if msg.receiver is None:
+            is_admin_chat = True
+        elif other and hasattr(other, 'profile') and other.profile.user_type == 'admin':
+            if request.user.profile.user_type != 'admin':
+                is_admin_chat = True
+                
+        if is_admin_chat and request.user.profile.user_type != 'admin':
+            other = None
+            other_name = 'الإدارة'
+        else:
+            other_name = other.first_name or other.username if other else 'الإدارة'
+        
+        participants = sorted([str(request.user.id), str(other.id) if other else 'admin'])
         room_id = f"chat_{msg.related_item_type}_{msg.related_item_id}_{participants[0]}_{participants[1]}"
         
         if room_id not in all_rooms:
@@ -487,15 +502,22 @@ def chat_window(request, chat_id):
         
     # Get all messages
     if other_user:
-        messages = ChatMessage.objects.filter(
-            Q(sender=request.user, receiver=other_user) | Q(sender=other_user, receiver=request.user),
-            related_item_type=item_type,
-            related_item_id=item_id
-        ).order_by('timestamp')
+        if request.user.profile.user_type == 'admin':
+            messages = ChatMessage.objects.filter(
+                Q(sender=request.user, receiver=other_user) | Q(sender=other_user, receiver=request.user) | Q(sender=other_user, receiver__isnull=True),
+                related_item_type=item_type,
+                related_item_id=item_id
+            ).order_by('timestamp')
+        else:
+            messages = ChatMessage.objects.filter(
+                Q(sender=request.user, receiver=other_user) | Q(sender=other_user, receiver=request.user),
+                related_item_type=item_type,
+                related_item_id=item_id
+            ).order_by('timestamp')
     else:
         # Chat with admin generally
         messages = ChatMessage.objects.filter(
-            Q(sender=request.user, receiver__isnull=True) | Q(sender__isnull=True, receiver=request.user),
+            Q(sender=request.user, receiver__isnull=True) | Q(receiver=request.user, sender__profile__user_type='admin'),
             related_item_type=item_type,
             related_item_id=item_id
         ).order_by('timestamp')
