@@ -72,6 +72,7 @@ def about(request):
     context = {'team': team}
     return render(request, 'portal/about.html', context)
 
+@csrf_exempt
 def nominate(request):
     if request.method == 'POST':
         name = request.POST.get('name')
